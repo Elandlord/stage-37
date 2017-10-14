@@ -1,4 +1,4 @@
-import { Injectable }    from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Headers, Http, Response } from '@angular/http';
 import { URLSearchParams } from '@angular/http';
 
@@ -6,13 +6,11 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 
 @Injectable()
-export class LoginService {
+export class AuthenticateService {
 
   private url = 'https://api.37company.rapide.software/v1/oauth/token';
 
   constructor(private http: Http) { }
-
-
 
   login(username: string, password: string) {
       const headers = new Headers();

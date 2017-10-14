@@ -1,9 +1,42 @@
-<h3>
-  {{ title }}
-</h3>
+<app-dashboard>
+  <div class="space-inside-sm">
+    <h3 class="inline-block">
+      {{ title }}
+    </h3>
 
-<ul>
-  <li *ngFor="let product of products">
-    {{ product.name }}
-  </li>
-</ul>
+    <button (click)="viewAdd()" class="inline-block btn bg-main text-color-light right">
+      Toevoegen
+    </button>
+  </div>
+
+
+  <app-read>
+
+      <tr (click)="viewDetails(i)" class="pointer" *ngFor="let product of products; let i = index">
+          <th>
+            {{ i + 1 + ". "}}
+          </th>
+          <th>
+            {{product.name }}
+          </th>
+          <td>
+            {{ product.alpha }}
+          </td>
+          <td>
+            {{ product.alpha_reflective }}
+          </td>
+          <td>
+            {{ product.alpha_white }}
+          </td>
+          <td>
+            {{ product.code }}
+          </td>
+          <td>
+            {{ product.description }}
+          </td>
+      </tr>
+
+
+
+  </app-read>
+</app-dashboard>

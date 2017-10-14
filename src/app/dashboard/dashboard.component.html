@@ -1,3 +1,32 @@
-<h3>Ingelogd</h3>
+<div id="wrapper" [ngClass]="menuOpen ? 'toggled' : ''">
 
-<a routerLink="/products" routerLinkActive="active">Producten</a>
+    <!-- Sidebar -->
+    <div id="sidebar-wrapper">
+        <ul class="sidebar-nav">
+            <li class="sidebar-brand">
+                <div class="image space-inside-sm space-inside-sides-sm">
+                    <img class="img-responsive" src="/assets/img/37company.svg">
+                </div>
+            </li>
+            <li>
+                <a [routerLink]="['/products']">Producten</a>
+            </li>
+            <li>
+                <a (click)="logout()">Uitloggen</a>
+            </li>
+        </ul>
+    </div>
+    <!-- /#sidebar-wrapper -->
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+        <div class="container-fluid">
+            <button (click)="menuOpen = !menuOpen" class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Menu</button>
+
+            <ng-content></ng-content>
+        </div>
+    </div>
+    <!-- /#page-content-wrapper -->
+
+</div>
+

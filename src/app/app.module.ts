@@ -13,9 +13,10 @@ import { AlertComponent } from './directives/alert/alert.component';
 
 import {AuthGuard} from './guards/auth.guard';
 
-import { LoginService } from './login/services/login.service';
-import {ProductService} from './crud/product/services/product.service';
+import { AuthenticateService } from './login/services/authenticate.service';
+import { ApiService } from './core/api.service';
 import { AlertService} from './services/alert.service';
+import { ReadComponent } from './core/components/read/read.component';
 
 @NgModule({
   declarations: [
@@ -24,15 +25,15 @@ import { AlertService} from './services/alert.service';
     DashboardComponent,
     ProductComponent,
     AlertComponent,
+    ReadComponent,
   ],
   imports: [
-    BrowserModule,
     BrowserModule,
     FormsModule,
     HttpModule,
     AppRoutingModule,
   ],
-  providers: [ AuthGuard, LoginService, ProductService, AlertService ],
+  providers: [ AuthGuard, AuthenticateService, AlertService, ApiService ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {AuthenticateService} from '../login/services/authenticate.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -7,7 +9,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DashboardComponent implements OnInit {
 
-  constructor() { }
+  public menuOpen = true;
+
+  constructor(
+      private authenticateService: AuthenticateService,
+      private router: Router,
+  ) { }
+
+  logout()
+  {
+    this.authenticateService.logout();
+    this.router.navigate(['/']);
+  }
 
   ngOnInit() {
   }

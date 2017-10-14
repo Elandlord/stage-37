@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 
 import { Product } from '../../models/product/product';
+import {ApiService} from '../../core/api.service';
 
-import { ProductService } from './services/product.service';
 
 @Component({
   selector: 'app-product',
@@ -14,14 +14,25 @@ export class ProductComponent implements OnInit {
   title = 'Producten';
   products: Product[];
 
-  constructor(private productService: ProductService) { }
+  constructor(private apiService: ApiService) { }
 
-  getProducts(): void {
-    this.productService.getProducts().then(products => this.products = products);
+  getProducts()
+  {
+      this.apiService.get('products').then((products) => {
+          this.products = products;
+      });
   }
 
   ngOnInit(): void {
     this.getProducts();
   }
+
+  viewDetails(id){
+    console.log(id);
+  }
+
+    viewAdd(){
+
+    }
 
 }
