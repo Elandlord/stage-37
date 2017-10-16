@@ -17,7 +17,7 @@
 
   <app-overlay *ngIf="overlaySelected">
     <div class="container">
-      <div class="col-lg-12 col-xs-12 space-inside-sides-xl">
+      <div class="col-lg-10 space-inside-sides-xl">
         <span (click)="hideOverlay()" class="right pointer font-lg text-hover-main transition-normal"><i class="material-icons">close</i></span>
         <div class="space-inside-lg">
           <form name="form" method="POST" (ngSubmit)="f.form.valid && update(selectedSurgery.id)" #f="ngForm" novalidate>
@@ -51,7 +51,7 @@
 
   <app-overlay *ngIf="overlayOpen">
     <div class="container">
-      <div class="col-lg-12 col-xs-12 space-inside-sides-xl">
+      <div class="col-lg-10 space-inside-sides-xl">
         <span (click)="hideOverlay()" class="right pointer font-lg text-hover-main transition-normal"><i class="material-icons">close</i></span>
 
         <div class="space-inside-lg">
