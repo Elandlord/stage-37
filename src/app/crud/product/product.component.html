@@ -4,7 +4,7 @@
       {{ title }}
     </h3>
 
-    <button class="inline-block btn bg-main text-color-light right">
+    <button (click)="addItem()" class="inline-block btn bg-main text-color-light right">
       Toevoegen
     </button>
   </div>
@@ -15,8 +15,198 @@
         </div>
     </div>
 
+    <app-overlay *ngIf="overlaySelected">
+        <div class="container">
+            <div class="col-lg-12">
+                <span (click)="hideOverlay()" class="right pointer font-lg text-hover-main transition-normal"><i class="material-icons">close</i></span>
+
+                <div class="space-inside-lg">
+                    <form name="form" method="POST" (ngSubmit)="f.form.valid && update(selectedProduct.id)" #f="ngForm" novalidate>
+                        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !name.valid }">
+                            <label for="name">Naam</label>
+                            <input class="form-control" type="text" id="name" name="name" [(ngModel)]="selectedProduct.name" #name="ngModel" required/>
+                            <div *ngIf="f.submitted && !name.valid" class="help-block">Naam is verplicht</div>
+                        </div>
+                        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !code.valid }">
+                            <label for="code">Code</label>
+                            <input class="form-control" type="text" id="code" name="code" [(ngModel)]="selectedProduct.code" #code="ngModel" required />
+                            <div *ngIf="f.submitted && !code.valid" class="help-block">Code is verplicht</div>
+                        </div>
+                        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !description.valid }">
+                            <label for="description">Beschrijving</label>
+                            <textarea class="form-control" id="description" name="description" [(ngModel)]="selectedProduct.description" #description="ngModel" required></textarea>
+                            <div *ngIf="f.submitted && !description.valid" class="help-block">Beschrijving is verplicht</div>
+                        </div>
+                        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !product_line_id.valid }">
+                            <label for="product_line_id">Productlijn</label>
+                            <select id="product_line_id" class="form-control" name="product_line_id" [(ngModel)]="selectedProduct.product_line_id" #product_line_id="ngModel" required>
+                                <option *ngFor="let productLine of productLines" [value]="productLine.id">{{ productLine.name }}</option>
+                            </select>
+                            <div *ngIf="f.submitted && !product_line_id.valid" class="help-block">Productlijn is verplicht</div>
+                        </div>
+                        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !insulating_factor_with_gown.valid }">
+                            <label for="insulating_factor_with_gown">Isolatiefactor met outfit</label>
+                            <input type="text" class="form-control" id="insulating_factor_with_gown"
+                                   name="insulating_factor_with_gown" [(ngModel)]="selectedProduct.insulating_factor_with_gown" #insulating_factor_with_gown="ngModel" required/>
+                            <div *ngIf="f.submitted && !insulating_factor_with_gown.valid" class="help-block">Isolatiefactor met outfit is verplicht</div>
+                        </div>
+                        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !insulating_factor_without_gown.valid }">
+                            <label for="insulating_factor_without_gown">Isolatiefactor zonder outfit</label>
+                            <input type="text" class="form-control" id="insulating_factor_without_gown"
+                                   name="insulating_factor_without_gown" [(ngModel)]="selectedProduct.insulating_factor_without_gown" #insulating_factor_without_gown="ngModel" required/>
+                            <div *ngIf="f.submitted && !insulating_factor_without_gown.valid" class="help-block">Isolatiefactor zonder outfit is verplicht</div>
+                        </div>
+                        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !fluid_type.valid }">
+                            <label for="fluid_type">Type vloeistof</label>
+                            <select id="fluid_type" class="form-control" name="fluid_type" [(ngModel)]="selectedProduct.fluid_type" #fluid_type="ngModel" required>
+                                <option value="blood">Blood</option>
+                                <option value="water">Water</option>
+                                <option value="plasma">Plasma</option>
+                            </select>
+                            <div *ngIf="f.submitted && !fluid_type.valid" class="help-block">Type vloeistof is verplicht</div>
+                        </div>
+                        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !alpha.valid }">
+                            <label for="alpha">Alpha</label>
+                            <input type="text" class="form-control" id="alpha" name="alpha" [(ngModel)]="selectedProduct.alpha" #alpha="ngModel" required/>
+                            <div *ngIf="f.submitted && !alpha.valid" class="help-block">Alpha is verplicht</div>
+                        </div>
+                        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !alpha_white.valid }">
+                            <label for="alpha_white">Alpha White</label>
+                            <input type="text" class="form-control" id="alpha_white" name="alpha_white" [(ngModel)]="selectedProduct.alpha_white" #alpha_white="ngModel" required/>
+                            <div *ngIf="f.submitted && !alpha_white.valid" class="help-block">Alpha White is verplicht</div>
+                        </div>
+                        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !alpha_reflective.valid }">
+                            <label for="alpha_reflective">Alpha Reflective</label>
+                            <input type="text" class="form-control" id="alpha_reflective" name="alpha_reflective"
+                                   [(ngModel)]="selectedProduct.alpha_reflective" #alpha_reflective="ngModel" required/>
+                            <div *ngIf="f.submitted && !alpha_reflective.valid" class="help-block">Alpha Reflective is verplicht</div>
+                        </div>
+                        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !heat_type.valid }">
+                            <label for="heat_type">Type hitte</label>
+                            <select id="heat_type" class="form-control" name="heat_type" [(ngModel)]="selectedProduct.heat_type" #heat_type="ngModel" required>
+                                <option value="passive">Passive</option>
+                                <option value="active">Active</option>
+                                <option value="fluid">Fluid</option>
+                                <option value="irrigation">Irrigation</option>
+                            </select>
+                            <div *ngIf="f.submitted && !heat_type.valid" class="help-block">Type hitte is verplicht</div>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </app-overlay>
+
+    <app-overlay *ngIf="overlayOpen">
+        <div class="container">
+            <div class="col-lg-12">
+                <span (click)="hideOverlay()" class="right pointer font-lg text-hover-main transition-normal"><i class="material-icons">close</i></span>
+
+                <div class="space-inside-lg">
+                    <form name="form" method="POST" (ngSubmit)="f.form.valid && create()" #f="ngForm" novalidate>
+                        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !name.valid }">
+                            <label for="name">Naam</label>
+                            <input class="form-control" type="text" id="name" name="name" [(ngModel)]="model.name" #name="ngModel" required/>
+                            <div *ngIf="f.submitted && !name.valid" class="help-block">Naam is verplicht</div>
+                        </div>
+                        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !code.valid }">
+                            <label for="code">Code</label>
+                            <input class="form-control" type="text" id="code" name="code" [(ngModel)]="model.code" #code="ngModel" required />
+                            <div *ngIf="f.submitted && !code.valid" class="help-block">Code is verplicht</div>
+                        </div>
+                        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !description.valid }">
+                            <label for="description">Beschrijving</label>
+                            <textarea class="form-control" id="description" name="description" [(ngModel)]="model.description" #description="ngModel" required></textarea>
+                            <div *ngIf="f.submitted && !description.valid" class="help-block">Beschrijving is verplicht</div>
+                        </div>
+                        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !product_line_id.valid }">
+                            <label for="product_line_id">Productlijn</label>
+                            <select id="product_line_id" class="form-control" name="product_line_id" [(ngModel)]="model.product_line_id" #product_line_id="ngModel" required>
+                                <option *ngFor="let productLine of productLines" [value]="productLine.id">{{ productLine.name }}</option>
+                            </select>
+                            <div *ngIf="f.submitted && !product_line_id.valid" class="help-block">Productlijn is verplicht</div>
+                        </div>
+                        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !insulating_factor_with_gown.valid }">
+                            <label for="insulating_factor_with_gown">Isolatiefactor met outfit</label>
+                            <input type="text" class="form-control" id="insulating_factor_with_gown"
+                                   name="insulating_factor_with_gown" [(ngModel)]="model.insulating_factor_with_gown" #insulating_factor_with_gown="ngModel" required/>
+                            <div *ngIf="f.submitted && !insulating_factor_with_gown.valid" class="help-block">Isolatiefactor met outfit is verplicht</div>
+                        </div>
+                        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !insulating_factor_without_gown.valid }">
+                            <label for="insulating_factor_without_gown">Isolatiefactor zonder outfit</label>
+                            <input type="text" class="form-control" id="insulating_factor_without_gown"
+                                   name="insulating_factor_without_gown" [(ngModel)]="model.insulating_factor_without_gown" #insulating_factor_without_gown="ngModel" required/>
+                            <div *ngIf="f.submitted && !insulating_factor_without_gown.valid" class="help-block">Isolatiefactor zonder outfit is verplicht</div>
+                         </div>
+                        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !fluid_type.valid }">
+                            <label for="fluid_type">Type vloeistof</label>
+                            <select id="fluid_type" class="form-control" name="fluid_type" [(ngModel)]="model.fluid_type" #fluid_type="ngModel" required>
+                                <option value="blood">Blood</option>
+                                <option value="water">Water</option>
+                                <option value="plasma">Plasma</option>
+                            </select>
+                            <div *ngIf="f.submitted && !fluid_type.valid" class="help-block">Type vloeistof is verplicht</div>
+                        </div>
+                        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !alpha.valid }">
+                            <label for="alpha">Alpha</label>
+                            <input type="text" class="form-control" id="alpha" name="alpha" [(ngModel)]="model.alpha" #alpha="ngModel" required/>
+                            <div *ngIf="f.submitted && !alpha.valid" class="help-block">Alpha is verplicht</div>
+                        </div>
+                        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !alpha_white.valid }">
+                            <label for="alpha_white">Alpha White</label>
+                            <input type="text" class="form-control" id="alpha_white" name="alpha_white" [(ngModel)]="model.alpha_white" #alpha_white="ngModel" required/>
+                            <div *ngIf="f.submitted && !alpha_white.valid" class="help-block">Alpha White is verplicht</div>
+                        </div>
+                        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !alpha_reflective.valid }">
+                            <label for="alpha_reflective">Alpha Reflective</label>
+                            <input type="text" class="form-control" id="alpha_reflective" name="alpha_reflective"
+                                   [(ngModel)]="model.alpha_reflective" #alpha_reflective="ngModel" required/>
+                            <div *ngIf="f.submitted && !alpha_reflective.valid" class="help-block">Alpha Reflective is verplicht</div>
+                        </div>
+                        <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !heat_type.valid }">
+                            <label for="heat_type">Type hitte</label>
+                            <select id="heat_type" class="form-control" name="heat_type" [(ngModel)]="model.heat_type" #heat_type="ngModel" required>
+                                <option value="passive">Passive</option>
+                                <option value="active">Active</option>
+                                <option value="fluid">Fluid</option>
+                                <option value="irrigation">Irrigation</option>
+                            </select>
+                            <div *ngIf="f.submitted && !heat_type.valid" class="help-block">Type hitte is verplicht</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Combineer met product</label>
+                            <select class="form-control" name="combine_with" [(ngModel)]="model.combine_with" #combine_with="ngModel" required>
+                                <option *ngFor="let product of products" [value]="product.id">{{ product.name }}</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </app-overlay>
+
   <app-read>
 
+      <tr>
+          <th>ID</th>
+          <th>Naam</th>
+          <th>Code</th>
+          <th>Beschrijving</th>
+          <th>Productlijn</th>
+          <th>Alpha</th>
+          <th>Alpha Reflective</th>
+          <th>Alpha White</th>
+          <th>Aanpassen</th>
+          <th>Verwijderen</th>
+      </tr>
       <tr class="pointer" *ngFor="let product of products; let i = index">
           <th>
             {{ i + 1 + ". "}}
@@ -24,6 +214,15 @@
           <th>
             {{product.name }}
           </th>
+          <td>
+              {{ product.code }}
+          </td>
+          <td>
+              {{ product.description }}
+          </td>
+          <td>
+              {{ productLines[product.product_line_id].name }}
+          </td>
           <td>
             {{ product.alpha }}
           </td>
@@ -34,10 +233,10 @@
             {{ product.alpha_white }}
           </td>
           <td>
-            {{ product.code }}
+              <button (click)="viewDetails(product.id)" type="button" class="btn btn-primary transition-normal"><i class="material-icons">assignment</i></button>
           </td>
           <td>
-            {{ product.description }}
+              <button (click)="destroy(product.id)"  type="button" class="btn btn-danger transition-normal"><i class="material-icons">delete_forever</i></button>
           </td>
       </tr>
 

@@ -1,3 +1,4 @@
+
 import { Injectable } from '@angular/core';
 import { Headers, Http } from '@angular/http';
 import 'rxjs/add/operator/toPromise';
@@ -6,6 +7,15 @@ import 'rxjs/add/operator/toPromise';
 export class ApiService {
 
     constructor(public http: Http) {
+    }
+
+    delete(queryString, id)
+    {
+        return this.http.delete(this.getUrl() + this.getVersion() + queryString + '/' + id,  {
+            headers: this.headers()
+        }).toPromise()
+        .then(response => response.json().data)
+        .catch();
     }
 
     headers() {
@@ -32,6 +42,22 @@ export class ApiService {
 
     getVersion() {
         return '/v1/';
+    }
+
+    post(queryString, data): Promise<any[]> {
+        return this.http.post(this.getUrl() + this.getVersion() + queryString, data, {
+            headers: this.headers()
+        }).toPromise()
+            .then(response => response.json().data)
+            .catch();
+    }
+
+    update(queryString, data, id): Promise<any[]> {
+        return this.http.put(this.getUrl() + this.getVersion() + queryString + '/' + id, data, {
+            headers: this.headers()
+        }).toPromise()
+            .then(response => response.json().data)
+            .catch();
     }
 
 }

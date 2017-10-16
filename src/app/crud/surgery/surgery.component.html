@@ -1,0 +1,122 @@
+<app-dashboard>
+  <div class="space-inside-sm">
+    <h3 class="inline-block">
+      {{ title }}
+    </h3>
+
+    <button (click)="addItem()" class="inline-block btn bg-main text-color-light right bg-main-hover-darken-xs transition-normal">
+      Toevoegen
+    </button>
+  </div>
+
+  <div class="container">
+    <div class="col-lg-12 text-center" *ngIf="loading">
+      <img src="../../../assets/img/svg-loaders/three-dots.svg" />
+    </div>
+  </div>
+
+  <app-overlay *ngIf="overlaySelected">
+    <div class="container">
+      <div class="col-lg-12 col-xs-12 space-inside-sides-xl">
+        <span (click)="hideOverlay()" class="right pointer font-lg text-hover-main transition-normal"><i class="material-icons">close</i></span>
+        <div class="space-inside-lg">
+          <form name="form" method="POST" (ngSubmit)="f.form.valid && update(selectedSurgery.id)" #f="ngForm" novalidate>
+            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !name.valid }">
+              <label for="name">Naam</label>
+              <input class="form-control" type="text" id="name" name="name" [(ngModel)]="selectedSurgery.name" #name="ngModel" required/>
+              <div *ngIf="f.submitted && !name.valid" class="help-block">Naam is verplicht</div>
+            </div>
+            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !surface.valid }">
+              <label for="surface">Surface</label>
+              <input class="form-control" type="text" id="surface" name="surface" [(ngModel)]="selectedSurgery.surface" #surface="ngModel" required/>
+              <div *ngIf="f.submitted && !surface.valid" class="help-block">Surface is verplicht</div>
+            </div>
+            <div class="form-group"  [ngClass]="{ 'has-error': f.submitted && !type.valid }">
+              <label for="type">Type</label>
+              <select id="type" class="form-control" name="type" [(ngModel)]="selectedSurgery.type" #type="ngModel" required>
+                <option value="per">Per</option>
+                <option value="pre">Pre</option>
+                <option value="post">Post</option>
+              </select>
+              <div *ngIf="f.submitted && !type.valid" class="help-block">Veld is verplicht</div>
+            </div>
+            <div class="form-group">
+              <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </app-overlay>
+
+  <app-overlay *ngIf="overlayOpen">
+    <div class="container">
+      <div class="col-lg-12 col-xs-12 space-inside-sides-xl">
+        <span (click)="hideOverlay()" class="right pointer font-lg text-hover-main transition-normal"><i class="material-icons">close</i></span>
+
+        <div class="space-inside-lg">
+          <form name="form" method="POST" (ngSubmit)="f.form.valid && create()" #f="ngForm" novalidate>
+            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !name.valid }">
+              <label for="name">Naam</label>
+              <input class="form-control" type="text" id="name" name="name" [(ngModel)]="model.name" #name="ngModel" required/>
+              <div *ngIf="f.submitted && !name.valid" class="help-block">Naam is verplicht</div>
+            </div>
+            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !surface.valid }">
+              <label for="surface">Surface</label>
+              <input class="form-control" type="text" id="surface" name="surface" [(ngModel)]="model.surface" #surface="ngModel" required/>
+              <div *ngIf="f.submitted && !surface.valid" class="help-block">Surface is verplicht</div>
+            </div>
+            <div class="form-group"  [ngClass]="{ 'has-error': f.submitted && !type.valid }">
+              <label for="type">Type</label>
+              <select id="type" class="form-control" name="type" [(ngModel)]="model.type" #type="ngModel" required>
+                <option value="per">Per</option>
+                <option value="pre">Pre</option>
+                <option value="post">Post</option>
+              </select>
+              <div *ngIf="f.submitted && !type.valid" class="help-block">Veld is verplicht</div>
+            </div>
+            <div class="form-group">
+              <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </app-overlay>
+
+  <app-read>
+
+    <tr>
+      <th>ID</th>
+      <th>Naam</th>
+      <th>Description</th>
+      <th>Hidden</th>
+      <th>Aanpassen</th>
+      <th>Verwijderen</th>
+    </tr>
+
+    <tr class="pointer" *ngFor="let surgery of surgeries; let i = index">
+      <th>
+        {{ i + 1 + ". "}}
+      </th>
+      <th>
+        {{surgery.name }}
+      </th>
+      <td>
+        {{ surgery.surface }}
+      </td>
+      <td>
+        {{ surgery.type }}
+      </td>
+      <td>
+        <button (click)="viewDetails(surgery.id)" type="button" class="btn btn-primary transition-normal"><i class="material-icons">assignment</i></button>
+      </td>
+      <td>
+        <button (click)="destroy(surgery.id)"  type="button" class="btn btn-danger transition-normal"><i class="material-icons">delete_forever</i></button>
+      </td>
+    </tr>
+
+
+
+  </app-read>
+</app-dashboard>

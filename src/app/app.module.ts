@@ -18,6 +18,19 @@ import { ApiService } from './core/api.service';
 import { AlertService} from './services/alert.service';
 import { ReadComponent } from './core/components/read/read.component';
 import { CountryComponent } from './crud/country/country.component';
+import { OverlayComponent } from './core/components/overlay/overlay.component';
+import { ProductLineComponent } from './crud/product-line/product-line.component';
+
+import { BooleanToYesnoPipe } from './pipes/boolean-to-yesno.pipe';
+import { ProductLineIdToNamePipe } from './pipes/product-line-id-to-name.pipe';
+import { ArticleComponent } from './crud/article/article.component';
+import { CategoryComponent } from './crud/category/category.component';
+import { RoleComponent } from './crud/role/role.component';
+import { UserComponent } from './crud/user/user.component';
+import { ProductSettingComponent } from './crud/product-setting/product-setting.component';
+import { SurgeryComponent } from './crud/surgery/surgery.component';
+import { PositionComponent } from './crud/position/position.component';
+import { AdviceComponent } from './crud/advice/advice.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +41,18 @@ import { CountryComponent } from './crud/country/country.component';
     AlertComponent,
     ReadComponent,
     CountryComponent,
+    OverlayComponent,
+    ProductLineComponent,
+    BooleanToYesnoPipe,
+    ProductLineIdToNamePipe,
+    ArticleComponent,
+    CategoryComponent,
+    RoleComponent,
+    UserComponent,
+    ProductSettingComponent,
+    SurgeryComponent,
+    PositionComponent,
+    AdviceComponent,
   ],
   imports: [
     BrowserModule,

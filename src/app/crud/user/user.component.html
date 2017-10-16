@@ -1,0 +1,144 @@
+<app-dashboard>
+  <div class="space-inside-sm">
+    <h3 class="inline-block">
+      {{ title }}
+    </h3>
+
+    <button (click)="addItem()" class="inline-block btn bg-main text-color-light right bg-main-hover-darken-xs transition-normal">
+      Toevoegen
+    </button>
+  </div>
+
+  <div class="container">
+    <div class="col-lg-12 text-center" *ngIf="loading">
+      <img src="../../../assets/img/svg-loaders/three-dots.svg" />
+    </div>
+  </div>
+
+  <app-overlay *ngIf="overlaySelected">
+    <div class="container">
+      <div class="col-lg-12 col-xs-12 space-inside-sides-xl">
+        <span (click)="hideOverlay()" class="right pointer font-lg text-hover-main transition-normal"><i class="material-icons">close</i></span>
+        <div class="space-inside-lg">
+          <form name="form" method="POST" (ngSubmit)="f.form.valid && update(selectedUser.id)" #f="ngForm" novalidate>
+            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !name.valid }">
+              <label for="name">Naam</label>
+              <input class="form-control" type="text" id="name" name="name" [(ngModel)]="selectedUser.name" #name="ngModel" required/>
+              <div *ngIf="f.submitted && !name.valid" class="help-block">Naam is verplicht</div>
+            </div>
+            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !email.valid }">
+              <label for="email">Emailadres</label>
+              <input class="form-control" type="email" id="email" name="email" [(ngModel)]="selectedUser.email" #email="ngModel" required/>
+              <div *ngIf="f.submitted && !email.valid" class="help-block">Emailadres is verplicht</div>
+            </div>
+            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !password.valid }">
+              <label for="password">Wachtwoord</label>
+              <input class="form-control" type="password" id="password" name="password" [(ngModel)]="selectedUser.password" #password="ngModel" required/>
+              <div *ngIf="f.submitted && !password.valid" class="help-block">Wachtwoord is verplicht</div>
+            </div>
+            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !country_id.valid }">
+              <label for="country_id">Land</label>
+              <input class="form-control" type="text" id="country_id" name="country_id" [(ngModel)]="selectedUser.country_id" #country_id="ngModel" required/>
+              <div *ngIf="f.submitted && !country_id.valid" class="help-block">Land is verplicht</div>
+            </div>
+            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !organisation.valid }">
+              <label for="organisation">Organisatie</label>
+              <input class="form-control" type="text" id="organisation" name="organisation" [(ngModel)]="selectedUser.organisation" #organisation="ngModel" required/>
+              <div *ngIf="f.submitted && !organisation.valid" class="help-block">Organisatie is verplicht</div>
+            </div>
+            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !function.valid }">
+              <label for="function">Functie</label>
+              <input class="form-control" type="text" id="function" name="function" [(ngModel)]="selectedUser.function" #function="ngModel" required/>
+              <div *ngIf="f.submitted && !function.valid" class="help-block">Functie is verplicht</div>
+            </div>
+            <div class="form-group">
+              <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </app-overlay>
+
+  <app-overlay *ngIf="overlayOpen">
+    <div class="container">
+      <div class="col-lg-12 col-xs-12 space-inside-sides-xl">
+        <span (click)="hideOverlay()" class="right pointer font-lg text-hover-main transition-normal"><i class="material-icons">close</i></span>
+
+        <div class="space-inside-lg">
+          <form name="form" method="POST" (ngSubmit)="f.form.valid && create()" #f="ngForm" novalidate>
+            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !name.valid }">
+              <label for="name">Naam</label>
+              <input class="form-control" type="text" id="name" name="name" [(ngModel)]="model.name" #name="ngModel" required/>
+              <div *ngIf="f.submitted && !name.valid" class="help-block">Naam is verplicht</div>
+            </div>
+            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !email.valid }">
+              <label for="email">Emailadres</label>
+              <input class="form-control" type="email" id="email" name="email" [(ngModel)]="model.email" #email="ngModel" required/>
+              <div *ngIf="f.submitted && !email.valid" class="help-block">Emailadres is verplicht</div>
+            </div>
+            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !password.valid }">
+              <label for="password">Wachtwoord</label>
+              <input class="form-control" type="password" id="password" name="password" [(ngModel)]="model.password" #password="ngModel" required/>
+              <div *ngIf="f.submitted && !password.valid" class="help-block">Wachtwoord is verplicht</div>
+            </div>
+            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !country_id.valid }">
+              <label for="country_id">Land</label>
+              <select id="country_id" class="form-control" name="country_id" [(ngModel)]="model.country_id" #country_id="ngModel" required>
+                <option *ngFor="let country of countries" [value]="country.id">{{ country.name }}</option>
+              </select>
+              <div *ngIf="f.submitted && !country_id.valid" class="help-block">Land is verplicht</div>
+            </div>
+            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !organisation.valid }">
+              <label for="organisation">Organisatie</label>
+              <input class="form-control" type="text" id="organisation" name="organisation" [(ngModel)]="model.organisation" #organisation="ngModel" required/>
+              <div *ngIf="f.submitted && !organisation.valid" class="help-block">Organisatie is verplicht</div>
+            </div>
+            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !function.valid }">
+              <label for="function">Functie</label>
+              <select id="function" class="form-control" name="function" [(ngModel)]="model.function" #function="ngModel" required>
+                <option *ngFor="let role of roles" [value]="role.id">{{ role.name }}</option>
+              </select>
+              <div *ngIf="f.submitted && !function.valid" class="help-block">Functie is verplicht</div>
+            </div>
+            <div class="form-group">
+              <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </app-overlay>
+
+  <app-read>
+
+    <tr>
+      <th>ID</th>
+      <th>Naam</th>
+      <th>Email</th>
+      <th>Organisatie</th>
+      <th>Functie</th>
+    </tr>
+
+    <tr class="pointer" *ngFor="let user of users; let i = index">
+      <th>
+        {{ i + 1 + ". "}}
+      </th>
+      <th>
+        {{user.name }}
+      </th>
+      <td>
+        {{ user.email }}
+      </td>
+      <td>
+        {{ user.organisation }}
+      </td>
+      <td>
+        {{ user.function }}
+      </td>
+    </tr>
+
+
+
+  </app-read>
+</app-dashboard>
