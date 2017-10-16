@@ -1,0 +1,28 @@
+<app-dashboard>
+  <div class="space-inside-sm">
+    <h3 class="inline-block">
+      {{ title }}
+    </h3>
+  </div>
+
+  <div class="container">
+    <div class="col-lg-12 text-center" *ngIf="loading">
+      <img src="../../../assets/img/svg-loaders/three-dots.svg" />
+    </div>
+  </div>
+
+  <app-read>
+
+    <tr class="pointer" *ngFor="let country of countries; let i = index">
+      <th>
+        {{ i + 1 + ". "}}
+      </th>
+      <th>
+        {{country.name }}
+      </th>
+    </tr>
+
+
+
+  </app-read>
+</app-dashboard>
