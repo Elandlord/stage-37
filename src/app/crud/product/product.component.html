@@ -4,15 +4,20 @@
       {{ title }}
     </h3>
 
-    <button (click)="viewAdd()" class="inline-block btn bg-main text-color-light right">
+    <button class="inline-block btn bg-main text-color-light right">
       Toevoegen
     </button>
   </div>
 
+    <div class="container">
+        <div class="col-lg-12 text-center" *ngIf="loading">
+            <img src="../../../assets/img/svg-loaders/three-dots.svg" />
+        </div>
+    </div>
 
   <app-read>
 
-      <tr (click)="viewDetails(i)" class="pointer" *ngFor="let product of products; let i = index">
+      <tr class="pointer" *ngFor="let product of products; let i = index">
           <th>
             {{ i + 1 + ". "}}
           </th>

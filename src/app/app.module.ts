@@ -17,6 +17,7 @@ import { AuthenticateService } from './login/services/authenticate.service';
 import { ApiService } from './core/api.service';
 import { AlertService} from './services/alert.service';
 import { ReadComponent } from './core/components/read/read.component';
+import { CountryComponent } from './crud/country/country.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { ReadComponent } from './core/components/read/read.component';
     ProductComponent,
     AlertComponent,
     ReadComponent,
+    CountryComponent,
   ],
   imports: [
     BrowserModule,

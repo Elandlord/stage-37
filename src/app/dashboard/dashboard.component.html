@@ -9,7 +9,15 @@
                 </div>
             </li>
             <li>
-                <a [routerLink]="['/products']">Producten</a>
+                <a class="transition-normal" [routerLink]="['/products']">Producten</a>
+                <a class="transition-normal"  [routerLink]="['/product-lines']">Productlijnen</a>
+                <a class="transition-normal" [routerLink]="['/operations']">Operaties</a>
+                <a class="transition-normal" [routerLink]="['/positions']">Posities</a>
+                <a class="transition-normal" [routerLink]="['/users']">Gebruikers</a>
+                <a class="transition-normal" [routerLink]="['/countries']">Landen</a>
+                <a class="transition-normal" [routerLink]="['/articles']">Artikels</a>
+                <a class="transition-normal" [routerLink]="['/roles']">Rollen</a>
+                <a class="transition-normal" [routerLink]="['/product-settings']">Productinstellingen</a>
             </li>
             <li>
                 <a (click)="logout()">Uitloggen</a>

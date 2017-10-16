@@ -4,12 +4,14 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from '../login/login.component';
 import { DashboardComponent } from '../dashboard/dashboard.component';
 
+import { CountryComponent } from '../crud/country/country.component';
 import { ProductComponent } from '../crud/product/product.component';
 
 import { AuthGuard} from '../guards/auth.guard';
 
 const routes: Routes = [
     { path: '', component: LoginComponent },
+    { path: 'countries', component: CountryComponent, canActivate: [AuthGuard]},
     { path: 'login', component: DashboardComponent, canActivate: [AuthGuard] },
     { path: 'products', component: ProductComponent, canActivate: [AuthGuard] },
     { path: '**', redirectTo: ''}
