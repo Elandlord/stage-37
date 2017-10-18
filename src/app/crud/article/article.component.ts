@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewContainerRef} from '@angular/core';
+
+import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
 import { Article} from '../../models/article/article';
 import { Category } from '../../models/category/category';
@@ -22,7 +24,9 @@ export class ArticleComponent implements OnInit {
     selectedArticle: any = {};
     overlaySelected = false;
 
-    constructor(private apiService: ApiService) {}
+    constructor(private apiService: ApiService, public toastr: ToastsManager, vcr: ViewContainerRef) {
+        this.toastr.setRootViewContainerRef(vcr);
+    }
 
     addItem()
     {
@@ -34,6 +38,7 @@ export class ArticleComponent implements OnInit {
         this.apiService.post('articles', this.model).then(() => {
             this.getArticles();
             this.overlayOpen = false;
+            this.toastr.success('Artikel succesvol toegevoegd.', 'Gelukt!');
         });
     }
 
@@ -41,6 +46,7 @@ export class ArticleComponent implements OnInit {
     {
         this.apiService.delete('article', id).then(() => {
             this.getArticles();
+            this.toastr.info('Artikel succesvol verwijderd.', 'Gelukt!');
         });
     }
 
@@ -86,6 +92,7 @@ export class ArticleComponent implements OnInit {
         this.apiService.update('article', this.selectedArticle, id).then(() => {
             this.getArticles();
             this.hideOverlay();
+            this.toastr.success('Artikel succesvol aangepast.', 'Gelukt!');
         })
     }
 

@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewContainerRef} from '@angular/core';
+
+import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
 import { Role } from '../../models/role/role';
 import { ApiService } from '../../core/api.service';
@@ -20,7 +22,9 @@ export class RoleComponent implements OnInit {
     selectedRole: any = {};
     overlaySelected = false;
 
-    constructor(private apiService: ApiService) {}
+    constructor(private apiService: ApiService, public toastr: ToastsManager, vcr: ViewContainerRef) {
+        this.toastr.setRootViewContainerRef(vcr);
+    }
 
     addItem()
     {
@@ -32,6 +36,7 @@ export class RoleComponent implements OnInit {
         this.apiService.post('roles', this.model).then(() => {
             this.getRoles();
             this.overlayOpen = false;
+            this.toastr.success('Rol succesvol toegevoegd.', 'Gelukt!');
         });
     }
 

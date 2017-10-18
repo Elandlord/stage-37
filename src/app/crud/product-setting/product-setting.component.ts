@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewContainerRef} from '@angular/core';
+
+import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
 import { Product } from '../../models/product/product';
 import { ProductSetting } from '../../models/product-setting/product-setting';
@@ -22,7 +24,9 @@ export class ProductSettingComponent implements OnInit {
     selectedProductSetting: any = {};
     overlaySelected = false;
 
-    constructor(private apiService: ApiService) {}
+    constructor(private apiService: ApiService, public toastr: ToastsManager, vcr: ViewContainerRef) {
+        this.toastr.setRootViewContainerRef(vcr);
+    }
 
     addItem()
     {
@@ -34,6 +38,7 @@ export class ProductSettingComponent implements OnInit {
         this.apiService.post('productsettings', this.model).then(() => {
             this.getProductSettings();
             this.overlayOpen = false;
+            this.toastr.success('Productsetting succesvol toegevoegd.', 'Gelukt!');
         });
     }
 
@@ -41,6 +46,7 @@ export class ProductSettingComponent implements OnInit {
     {
         this.apiService.delete('productsetting', id).then(() => {
             this.getProductSettings();
+            this.toastr.info('Productsetting succesvol verwijderd.', 'Gelukt!');
         });
     }
 
@@ -49,6 +55,17 @@ export class ProductSettingComponent implements OnInit {
         this.apiService.get('products').then((products) => {
             this.products = products;
         });
+    }
+
+    getProductNameBySettingId(id)
+    {
+
+        if(this.products !== undefined)
+        {
+            return this.products[id].name;
+        }
+
+        return 'Geen';
     }
 
     getProductSetting(id)
@@ -85,7 +102,8 @@ export class ProductSettingComponent implements OnInit {
         this.apiService.update('productsetting', this.selectedProductSetting, id).then(() => {
             this.getProductSettings();
             this.hideOverlay();
-        })
+            this.toastr.success('Productsetting succesvol aangepast.', 'Gelukt!');
+        });
     }
 
     viewDetails(id)

@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewContainerRef} from '@angular/core';
+
+import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
 import { Surgery } from '../../models/surgery/surgery';
 import { ApiService } from '../../core/api.service';
@@ -20,7 +22,9 @@ export class SurgeryComponent implements OnInit {
     selectedSurgery: any = {};
     overlaySelected = false;
 
-    constructor(private apiService: ApiService) {}
+    constructor(private apiService: ApiService, public toastr: ToastsManager, vcr: ViewContainerRef) {
+        this.toastr.setRootViewContainerRef(vcr);
+    }
 
     addItem()
     {
@@ -32,6 +36,7 @@ export class SurgeryComponent implements OnInit {
         this.apiService.post('surgeries', this.model).then(() => {
             this.getSurgeries();
             this.overlayOpen = false;
+            this.toastr.success('Operatie succesvol toegevoegd.', 'Gelukt!');
         });
     }
 
@@ -39,6 +44,7 @@ export class SurgeryComponent implements OnInit {
     {
         this.apiService.delete('surgery', id).then(() => {
             this.getSurgeries();
+            this.toastr.info('Operatie succesvol verwijderd.', 'Gelukt!');
         });
     }
 
@@ -75,6 +81,7 @@ export class SurgeryComponent implements OnInit {
         this.apiService.update('surgery', this.selectedSurgery, id).then(() => {
             this.getSurgeries();
             this.hideOverlay();
+            this.toastr.success('Operatie succesvol aangepast.', 'Gelukt!');
         })
     }
 

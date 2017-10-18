@@ -13,8 +13,9 @@ export class DashboardComponent implements OnInit {
 
   constructor(
       private authenticateService: AuthenticateService,
-      private router: Router,
-  ) { }
+      private router: Router)
+  {
+  }
 
   logout()
   {

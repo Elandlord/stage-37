@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewContainerRef} from '@angular/core';
+
+import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
 import { ProductLine } from '../../models/product-line/product-line';
 import {ApiService} from '../../core/api.service';
@@ -20,7 +22,9 @@ export class ProductLineComponent implements OnInit {
     selectedProductLine: any = {};
     overlaySelected = false;
 
-    constructor(private apiService: ApiService) {}
+    constructor(private apiService: ApiService, public toastr: ToastsManager, vcr: ViewContainerRef) {
+        this.toastr.setRootViewContainerRef(vcr);
+    }
 
     addItem()
     {
@@ -32,6 +36,7 @@ export class ProductLineComponent implements OnInit {
         this.apiService.post('productlines', this.model).then(() => {
             this.getProductLines();
             this.overlayOpen = false;
+            this.toastr.success('Productlijn succesvol toegevoegd.', 'Gelukt!');
         });
     }
 
@@ -39,6 +44,7 @@ export class ProductLineComponent implements OnInit {
     {
         this.apiService.delete('productline', id).then(() => {
             this.getProductLines();
+            this.toastr.info('Productlijn succesvol verwijderd.', 'Gelukt!');
         });
     }
 
@@ -75,6 +81,7 @@ export class ProductLineComponent implements OnInit {
         this.apiService.update('productline', this.selectedProductLine, id).then(() => {
           this.getProductLines();
           this.hideOverlay();
+            this.toastr.success('Productlijn succesvol aangepast.', 'Gelukt!');
         })
     }
 

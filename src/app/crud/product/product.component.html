@@ -4,32 +4,101 @@
       {{ title }}
     </h3>
 
-    <button (click)="addItem()" class="inline-block btn bg-main text-color-light right">
+    <button (click)="addItem()" class="inline-block btn bg-main bg-main-hover-darken-xs transition-normal text-color-light right">
       Toevoegen
     </button>
   </div>
 
     <div class="container">
-        <div class="col-lg-12 text-center" *ngIf="loading">
+        <div class="col-lg-12 text-center space-inside-xl" *ngIf="loading">
             <img src="../../../assets/img/svg-loaders/three-dots.svg" />
         </div>
     </div>
 
+    <!--<div class="container" *ngIf="!loading">-->
+        <!--<div class="col-lg-10 space-inside-down-sm text-left">-->
+            <!--<div class="form-group">-->
+                <!--<form>-->
+                    <!--<input type="text" (keyup)="setSearchParam($event)" class="form-control" placeholder="Zoek product..." />-->
+                <!--</form>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+
+    <!--FORM COUNTRIES-->
+    <app-overlay *ngIf="overlaySurgery">
+        <div class="container">
+            <div class="col-lg-10 space-inside-sides-xl">
+                <span (click)="hideOverlay()" class="right pointer font-lg text-hover-main transition-normal"><i class="material-icons">close</i></span>
+                <div class="col-lg-12 space-inside-md">
+                    <h4 class="text-thin ">Product: <span class="text-bold">{{ selectedProduct.name }}</span></h4>
+                    <p class="text-color-accent space-inside-down-sm">Klik op een operatie om posities in te vullen.</p>
+
+                    <form name="form" method="POST" (ngSubmit)="f.form.valid && updateSurgeries(selectedProduct.id)" #f="ngForm" novalidate>
+                        <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal space-inside-down-sm">Opslaan</button>
+                        <div class="space-inside-xs" *ngFor="let surgery of surgeries; let i = index">
+
+                            <input type="checkbox" [id]="surgery.name" (change)="addSurgery(surgery.id)" class="inline-block space-inside-right-md">
+                            <label [for]="surgery.name" class="inline-block pointer"><h5 class="text-thin">Operatie: <span class="text-bold">{{ surgery.name }}</span></h5></label>
+
+                            <div *ngIf="surgeryInArray(surgery.id)" class="animated fadeIn">
+                                <table class="table shadow-xs">
+                                    <thead class="thead-inverse">
+                                        <tr>
+                                            <th>Check</th>
+                                            <th>Posities</th>
+                                            <th>Surface Area</th>
+                                        </tr>
+                                    </thead>
+                                    <tr *ngFor="let position of positions; let i = index">
+
+                                            <td class="td-max-input"><input [id]="position.id" type="checkbox" /></td>
+                                            <td class="td-max-input"><label class="pointer text-thin" [for]="position.id">{{ position.name }}</label></td>
+                                            <td class="td-max-input"><input [name]="position.name" [(ngModel)]="selectedPositionsPerSurgery[position.id]" class="form-control" type="text" placeholder="Surface" /></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <hr/>
+                        </div>
+                        <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </app-overlay>
 
     <!--FORM COUNTRIES-->
     <app-overlay *ngIf="overlayCountry">
         <div class="container">
             <div class="col-lg-10 space-inside-sides-xl">
                 <span (click)="hideOverlay()" class="right pointer font-lg text-hover-main transition-normal"><i class="material-icons">close</i></span>
-                <h3 class="space-inside-sm">Beschikbaar in land:</h3>
-                <button (click)="selectAllCountries()" class="btn bg-main text-color-light">Selecteer alles</button>
+                <div class="col-lg-12 space-inside-md">
+                    <h3 class="space-inside-sm">Beschikbaarheid per land</h3>
+                    <button (click)="selectAllCountries()" class="btn bg-main text-color-light">Selecteer alles</button>
+                </div>
                 <div class="space-inside-sm">
                     <form name="form" method="POST" (ngSubmit)="f.form.valid && updateCountries(selectedProduct.id)" #f="ngForm" novalidate>
-                        <div class="form-group col-lg-12 space-inside-md">
+                        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
+                            <h4>Geselecteerde landen</h4>
+                            <p class="text-color-accent">Klik op een land om te deselecteren</p>
+                        </div>
+                        <div class="form-group col-lg-4 col-md-4 col-sm-4 col-xs-4">
                             <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
                         </div>
-                        <div class="col-lg-4" *ngFor="let country of countries; let i = index">
-                            <input type="checkbox" name="country_id[]" [(ngModel)]="selectedCountries[country.id]"  [value]="country.id"  [checked]="allCountries">{{ country.name }} <br/>
+                        <div class="col-lg-12"></div>
+                        <div class="col-lg-4 " *ngFor="let countryID of selectedCountries; let i = index">
+                            <input type="checkbox" [id]="countryID" (change)="unselectCountry(countryID)"  [value]="countryID" checked="yes">
+                            <label class="pointer" [for]="countryID"> {{ getCountryNameById(countryID) }}</label>
+                            <br/>
+                        </div>
+                        <div class="col-lg-12 space-inside-up-md">
+                            <h4>Niet-geselecteerde landen</h4>
+                            <p class="text-color-accent">Klik op een land om te selecteren</p>
+                        </div>
+                        <div class="col-lg-4" *ngFor="let countryID of unselectedCountries; let i = index">
+                            <input type="checkbox" [id]="countryID" (change)="selectCountry(countryID)"  [value]="countryID">
+                            <label class="text-thin pointer" [for]="countryID"> {{ getCountryNameById(countryID) }}</label>
+                            <br/>
                         </div>
                         <div class="form-group col-lg-12 space-inside-md">
                             <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
@@ -138,7 +207,6 @@
         <div class="container">
             <div class="col-lg-10">
                 <span (click)="hideOverlay()" class="right pointer font-lg text-hover-main transition-normal"><i class="material-icons">close</i></span>
-
                 <div class="space-inside-lg">
                     <form name="form" method="POST" (ngSubmit)="f.form.valid && combineProduct()" #f="ngForm" novalidate>
                         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !name.valid }">
@@ -225,33 +293,34 @@
                         </div>
                     </form>
                 </div>
-
             </div>
         </div>
     </app-overlay>
 
-  <app-read>
-
-      <tr>
-          <th>#</th>
-          <th>Naam</th>
-          <th>Code</th>
-          <th>Beschrijving</th>
-          <th>Productlijn</th>
-          <th>Alpha</th>
-          <th>Alpha Reflective</th>
-          <th>Alpha White</th>
-          <th>Beschikbaarheid per land</th>
-          <th>Aanpassen</th>
-          <th>Verwijderen</th>
-      </tr>
+  <app-read *ngIf="!loading">
+      <thead class="thead-inverse">
+          <tr>
+              <th>#</th>
+              <th>Naam</th>
+              <th>Code</th>
+              <th>Beschrijving</th>
+              <th>Productlijn</th>
+              <th>Alpha</th>
+              <th>Alpha Reflective</th>
+              <th>Alpha White</th>
+              <th>Operaties</th>
+              <th>Beschikbaarheid per land</th>
+              <th>Aanpassen</th>
+              <th>Verwijderen</th>
+          </tr>
+      </thead>
       <tr class="pointer" *ngFor="let product of products; let i = index">
           <th>
-            {{ i + 1 + ". "}}
+            {{ i + 1 }}
           </th>
-          <th>
+          <td>
             {{product.name }}
-          </th>
+          </td>
           <td>
               {{ product.code }}
           </td>
@@ -259,7 +328,7 @@
               {{ product.description }}
           </td>
           <td>
-              {{ productLines[product.product_line_id - 1].name }}
+              {{ getProductLineNameById(product.product_line_id) }}
           </td>
           <td>
             {{ product.alpha }}
@@ -271,7 +340,10 @@
             {{ product.alpha_white }}
           </td>
           <td>
-            <button (click)="viewCountries(product.id)" type="button" class="btn bg-main transition-normal text-color-light">Landen</button>
+              <button (click)="viewSurgery(product.id)" type="button" class="btn btn-success transition-normal text-color-light">Operaties</button>
+          </td>
+          <td>
+            <button (click)="viewCountries(product.id)" type="button" class="btn bg-main bg-main-hover-darken-xs transition-normal text-color-light">Landen</button>
           </td>
           <td>
               <button (click)="viewDetails(product.id)" type="button" class="btn btn-primary transition-normal"><i class="material-icons">assignment</i></button>
@@ -280,8 +352,5 @@
               <button (click)="destroy(product.id)"  type="button" class="btn btn-danger transition-normal"><i class="material-icons">delete_forever</i></button>
           </td>
       </tr>
-
-
-
   </app-read>
 </app-dashboard>

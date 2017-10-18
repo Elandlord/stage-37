@@ -10,7 +10,7 @@
   </div>
 
   <div class="container">
-    <div class="col-lg-12 text-center" *ngIf="loading">
+    <div class="col-lg-12 text-center space-inside-xl" *ngIf="loading">
       <img src="../../../assets/img/svg-loaders/three-dots.svg" />
     </div>
   </div>
@@ -110,19 +110,21 @@
     </div>
   </app-overlay>
 
-  <app-read>
+  <app-read *ngIf="!loading">
 
-    <tr>
-      <th>ID</th>
-      <th>Naam</th>
-      <th>Email</th>
-      <th>Organisatie</th>
-      <th>Functie</th>
-    </tr>
+    <thead class="thead-inverse">
+      <tr>
+        <th>#</th>
+        <th>Naam</th>
+        <th>Email</th>
+        <th>Organisatie</th>
+        <th>Functie</th>
+      </tr>
+    </thead>
 
     <tr class="pointer" *ngFor="let user of users; let i = index">
       <th>
-        {{ i + 1 + ". "}}
+        {{ i + 1 }}
       </th>
       <th>
         {{user.name }}
@@ -134,7 +136,7 @@
         {{ user.organisation }}
       </td>
       <td>
-        {{ user.function }}
+        {{ getFunctionById(user.function) }}
       </td>
     </tr>
 

@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewContainerRef} from '@angular/core';
+
+import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
 import { Category } from '../../models/category/category';
 import { ApiService } from '../../core/api.service';
@@ -20,7 +22,9 @@ export class CategoryComponent implements OnInit {
     selectedCategory: any = {};
     overlaySelected = false;
 
-    constructor(private apiService: ApiService) {}
+    constructor(private apiService: ApiService, public toastr: ToastsManager, vcr: ViewContainerRef) {
+        this.toastr.setRootViewContainerRef(vcr);
+    }
 
     addItem()
     {
@@ -32,6 +36,7 @@ export class CategoryComponent implements OnInit {
         this.apiService.post('categories', this.model).then(() => {
             this.getCategories();
             this.overlayOpen = false;
+            this.toastr.success('Categorie succesvol toegevoegd.', 'Gelukt!');
         });
     }
 
@@ -39,6 +44,7 @@ export class CategoryComponent implements OnInit {
     {
         this.apiService.delete('category', id).then(() => {
             this.getCategories();
+            this.toastr.info('Categorie succesvol verwijderd.', 'Gelukt!');
         });
     }
 
@@ -75,6 +81,7 @@ export class CategoryComponent implements OnInit {
         this.apiService.update('category', this.selectedCategory , id).then(() => {
             this.getCategories();
             this.hideOverlay();
+            this.toastr.success('Categorie succesvol aangepast.', 'Gelukt!');
         })
     }
 

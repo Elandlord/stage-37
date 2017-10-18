@@ -10,6 +10,8 @@ import { LoginComponent } from './login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ProductComponent } from './crud/product/product.component';
 import { AlertComponent } from './directives/alert/alert.component';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {ToastModule} from 'ng2-toastr/ng2-toastr';
 
 import {AuthGuard} from './guards/auth.guard';
 
@@ -59,6 +61,9 @@ import { AdviceComponent } from './crud/advice/advice.component';
     FormsModule,
     HttpModule,
     AppRoutingModule,
+    BrowserModule,
+    BrowserAnimationsModule,
+    ToastModule.forRoot()
   ],
   providers: [ AuthGuard, AuthenticateService, AlertService, ApiService ],
   bootstrap: [AppComponent]

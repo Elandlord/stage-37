@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewContainerRef} from '@angular/core';
+
+import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
 import { Country } from '../../models/country/country';
 import { User} from '../../models/user/user';
-import { Role } from "../../models/role/role";
+import { Role } from '../../models/role/role';
 import { ApiService } from '../../core/api.service';
 
 
@@ -25,7 +27,9 @@ export class UserComponent implements OnInit {
   selectedUser: any = {};
   overlaySelected = false;
 
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService, public toastr: ToastsManager, vcr: ViewContainerRef) {
+      this.toastr.setRootViewContainerRef(vcr);
+  }
 
     addItem()
     {
@@ -37,6 +41,7 @@ export class UserComponent implements OnInit {
         this.apiService.post('users', this.model).then(() => {
             this.getUsers();
             this.overlayOpen = false;
+            this.toastr.success('Gebruiker succesvol toegevoegd.', 'Gelukt!');
         });
     }
 
@@ -61,6 +66,21 @@ export class UserComponent implements OnInit {
             this.countries = countries;
             this.loading = false;
         });
+    }
+
+    getFunctionById(id)
+    {
+        if(this.roles !== undefined)
+        {
+            for (let role of this.roles)
+            {
+                if (role.id === id)
+                {
+                    return role.name;
+                }
+            }
+        }
+        return 'Geen';
     }
 
     getRoles()

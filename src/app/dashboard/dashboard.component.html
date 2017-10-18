@@ -3,17 +3,17 @@
     <!-- Sidebar -->
     <div id="sidebar-wrapper">
         <ul class="sidebar-nav">
-            <li class="sidebar-brand">
+            <li class="sidebar-brand space-inside-sm">
                 <div class="image space-inside-sm space-inside-sides-sm">
-                    <img class="img-responsive" src="/assets/img/37company.svg">
+                    <a href="https://www.the37company.com/" target="_blank">
+                        <img class="img-responsive full-height" src="/assets/img/37company.svg">
+                    </a>
                 </div>
             </li>
-            <li>
+            <li class="space-inside-up-sm">
                 <div>
                     <hr>
                     <span><i class="material-icons font-lg text-color-light">shopping_basket</i><h5 class="inline-block text-color-light">Producten</h5></span>
-                    <a class="transition-normal" [routerLink]="['/articles']">Artikels</a>
-                    <a class="transition-normal" [routerLink]="['/categories']">Categorieën</a>
                     <a class="transition-normal" [routerLink]="['/products']">Producten</a>
                     <a class="transition-normal"  [routerLink]="['/product-lines']">Productlijnen</a>
                 </div>
@@ -26,6 +26,12 @@
                 </div>
                 <div>
                     <hr>
+                    <span><i class="material-icons font-lg text-color-light">settings</i><h5 class="inline-block text-color-light">CMS</h5></span>
+                    <a class="transition-normal" [routerLink]="['/articles']">Artikelen</a>
+                    <a class="transition-normal" [routerLink]="['/categories']">Categorieën</a>
+                </div>
+                <div>
+                    <hr>
                     <span><i class="material-icons font-lg text-color-light">settings</i><h5 class="inline-block text-color-light">Beheer</h5></span>
                     <a class="transition-normal" [routerLink]="['/users']">Gebruikers</a>
                     <a class="transition-normal" [routerLink]="['/roles']">Rollen</a>
@@ -34,6 +40,7 @@
                 </div>
             </li>
             <li>
+                <hr>
                 <a (click)="logout()">Uitloggen</a>
             </li>
         </ul>
