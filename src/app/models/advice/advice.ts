@@ -1,3 +1,5 @@
 export class Advice {
-    product_id: number;
+    id: number;
+    order_id: number;
+    name: string;
 }

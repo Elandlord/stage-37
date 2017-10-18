@@ -45,7 +45,7 @@ export class AdviceComponent implements OnInit {
 
     getAdvice(id)
     {
-        this.apiService.get('position/' + id).then((advice) => {
+        this.apiService.get('advice/' + id).then((advice) => {
             this.selectedAdvice = advice;
             this.overlaySelected = true;
         });
@@ -54,7 +54,7 @@ export class AdviceComponent implements OnInit {
     getAdvices()
     {
         this.loading = true;
-        this.apiService.get('positions').then((advices) => {
+        this.apiService.get('advices').then((advices) => {
             this.advices = advices;
             this.loading = false;
         });
@@ -73,7 +73,7 @@ export class AdviceComponent implements OnInit {
 
     update(id)
     {
-        this.apiService.update('position', this.selectedAdvice, id).then(() => {
+        this.apiService.update('advice', this.selectedAdvice, id).then(() => {
             this.getAdvices();
             this.hideOverlay();
         });

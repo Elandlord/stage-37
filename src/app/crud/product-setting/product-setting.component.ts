@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
+import { Product } from '../../models/product/product';
 import { ProductSetting } from '../../models/product-setting/product-setting';
 import { ApiService } from '../../core/api.service';
 
@@ -16,6 +17,7 @@ export class ProductSettingComponent implements OnInit {
 
     model: any = {};
     productSettings: ProductSetting[];
+    products: Product[];
 
     selectedProductSetting: any = {};
     overlaySelected = false;
@@ -39,6 +41,13 @@ export class ProductSettingComponent implements OnInit {
     {
         this.apiService.delete('productsetting', id).then(() => {
             this.getProductSettings();
+        });
+    }
+
+    getProducts()
+    {
+        this.apiService.get('products').then((products) => {
+            this.products = products;
         });
     }
 
@@ -67,6 +76,7 @@ export class ProductSettingComponent implements OnInit {
 
     ngOnInit()
     {
+        this.getProducts();
         this.getProductSettings();
     }
 

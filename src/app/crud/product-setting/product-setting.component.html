@@ -21,6 +21,13 @@
         <span (click)="hideOverlay()" class="right pointer font-lg text-hover-main transition-normal"><i class="material-icons">close</i></span>
         <div class="space-inside-lg">
           <form name="form" method="POST" (ngSubmit)="f.form.valid && update(selectedProductSetting.id)" #f="ngForm" novalidate>
+            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !product_id.valid }">
+              <label for="product_id">Product</label>
+              <select id="product_id" class="form-control" name="product_id" [(ngModel)]="model.product_id" #product_id="ngModel" required>
+                <option *ngFor="let product of products" [value]="product.id">{{ product.name }}</option>
+              </select>
+              <div *ngIf="f.submitted && !product_id.valid" class="help-block">Product is verplicht</div>
+            </div>
             <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !name.valid }">
               <label for="name">Naam</label>
               <input class="form-control" type="text" id="name" name="name" [(ngModel)]="selectedProductSetting.name" #name="ngModel" required/>
@@ -58,6 +65,11 @@
               <input class="form-control" type="text" id="max" name="max" [(ngModel)]="selectedProductSetting.max" #max="ngModel" required/>
               <div *ngIf="f.submitted && !max.valid" class="help-block">Max is verplicht</div>
             </div>
+            <div class="form-group" *ngIf="selectedProductSetting.input_type === 'select'">
+              <label for="values">Waardes</label>
+              <input class="form-control" type="text" id="values" name="values" [(ngModel)]="selectedProductSetting.values" #values="ngModel" required/>
+              <div *ngIf="f.submitted && !values.valid" class="help-block">Waardes zijn verplicht</div>
+            </div>
             <div class="form-group">
               <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
             </div>
@@ -74,6 +86,13 @@
 
         <div class="space-inside-lg">
           <form name="form" method="POST" (ngSubmit)="f.form.valid && create()" #f="ngForm" novalidate>
+            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !product_id.valid }">
+              <label for="product_id">Product</label>
+              <select id="product_id" class="form-control" name="product_id" [(ngModel)]="model.product_id" #product_id="ngModel" required>
+                <option *ngFor="let product of products" [value]="product.id">{{ product.name }}</option>
+              </select>
+              <div *ngIf="f.submitted && !product_id.valid" class="help-block">Product is verplicht</div>
+            </div>
             <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !name.valid }">
               <label for="name">Naam</label>
               <input class="form-control" type="text" id="name" name="name" [(ngModel)]="model.name" #name="ngModel" required/>
@@ -111,6 +130,11 @@
               <input class="form-control" type="text" id="max" name="max" [(ngModel)]="model.max" #max="ngModel" required/>
               <div *ngIf="f.submitted && !max.valid" class="help-block">Max is verplicht</div>
             </div>
+            <div class="form-group" *ngIf="model.input_type === 'select'">
+              <label for="values">Waardes</label>
+              <input class="form-control" type="text" id="values" name="values" [(ngModel)]="model.values" #values="ngModel" required/>
+              <div *ngIf="f.submitted && !values.valid" class="help-block">Waardes zijn verplicht</div>
+            </div>
             <div class="form-group">
               <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
             </div>
@@ -124,6 +148,7 @@
 
     <tr>
       <th>ID</th>
+      <th>Product</th>
       <th>Naam</th>
       <th>Input Type</th>
       <th>Type</th>
@@ -139,6 +164,9 @@
       <th>
         {{ i + 1 + ". "}}
       </th>
+      <td>
+        {{ products[productSetting.product_id - 1].name }}
+      </td>
       <td>
         {{ productSetting.name }}
       </td>

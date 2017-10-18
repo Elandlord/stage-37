@@ -66,8 +66,9 @@
             </div>
             <div class="form-group"  [ngClass]="{ 'has-error': f.submitted && !parent_id.valid }">
               <label for="parent_id">Categorie</label>
-              <select id="parent_id" class="form-control" name="parent_id" [(ngModel)]="model.parent_id" #parent_id="ngModel" required>
+              <select class="form-control" id="parent_id" name="parent_id" [(ngModel)]="model.parent_id" #parent_id="ngModel">
                 <option value="1">Test</option>
+                <option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</option>
               </select>
               <div *ngIf="f.submitted && !parent_id.valid" class="help-block">Parent is verplicht</div>
             </div>
@@ -83,12 +84,8 @@
   <app-read>
 
     <tr>
+      <th>#</th>
       <th>ID</th>
-      <th>Naam</th>
-      <th>Beschrijving</th>
-      <th>Parent</th>
-      <th>Aanpassen</th>
-      <th>Verwijderen</th>
     </tr>
 
     <tr class="pointer" *ngFor="let category of categories; let i = index">
@@ -96,14 +93,8 @@
         {{ i + 1 + ". "}}
       </th>
       <th>
-        {{category.name }}
+        {{category.id }}
       </th>
-      <td>
-        {{ category.description }}
-      </td>
-      <td>
-        {{ category.parent_id }}
-      </td>
       <td>
         <button (click)="viewDetails(category.id)" type="button" class="btn btn-primary transition-normal"><i class="material-icons">assignment</i></button>
       </td>

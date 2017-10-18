@@ -6,7 +6,6 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class BooleanToYesnoPipe implements PipeTransform {
 
   transform(value){
-    console.log(value);
     if(value === 0){
       return 'Nee';
     }else{

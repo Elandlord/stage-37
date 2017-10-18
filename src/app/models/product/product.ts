@@ -11,4 +11,6 @@ export class Product {
     alpha_white: number;
     alpha_reflective: number;
     heat_type: number;
+    country_id: any[];
+    combine_with: any[];
 }

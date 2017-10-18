@@ -26,7 +26,8 @@
               <input class="form-control" type="text" id="name" name="name" [(ngModel)]="selectedSurgery.name" #name="ngModel" required/>
               <div *ngIf="f.submitted && !name.valid" class="help-block">Naam is verplicht</div>
             </div>
-            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !surface.valid }">
+            <div class="form-group" [ngClass]="{ 'has-error': f.submitted
+            && !surface.valid }">
               <label for="surface">Surface</label>
               <input class="form-control" type="text" id="surface" name="surface" [(ngModel)]="selectedSurgery.surface" #surface="ngModel" required/>
               <div *ngIf="f.submitted && !surface.valid" class="help-block">Surface is verplicht</div>
@@ -89,8 +90,8 @@
     <tr>
       <th>ID</th>
       <th>Naam</th>
-      <th>Description</th>
-      <th>Hidden</th>
+      <th>Surface</th>
+      <th>Type</th>
       <th>Aanpassen</th>
       <th>Verwijderen</th>
     </tr>

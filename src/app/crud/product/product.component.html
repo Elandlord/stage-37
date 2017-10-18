@@ -15,6 +15,32 @@
         </div>
     </div>
 
+
+    <!--FORM COUNTRIES-->
+    <app-overlay *ngIf="overlayCountry">
+        <div class="container">
+            <div class="col-lg-10 space-inside-sides-xl">
+                <span (click)="hideOverlay()" class="right pointer font-lg text-hover-main transition-normal"><i class="material-icons">close</i></span>
+                <h3 class="space-inside-sm">Beschikbaar in land:</h3>
+                <button (click)="selectAllCountries()" class="btn bg-main text-color-light">Selecteer alles</button>
+                <div class="space-inside-sm">
+                    <form name="form" method="POST" (ngSubmit)="f.form.valid && updateCountries(selectedProduct.id)" #f="ngForm" novalidate>
+                        <div class="form-group col-lg-12 space-inside-md">
+                            <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
+                        </div>
+                        <div class="col-lg-4" *ngFor="let country of countries; let i = index">
+                            <input type="checkbox" name="country_id[]" [(ngModel)]="selectedCountries[country.id]"  [value]="country.id"  [checked]="allCountries">{{ country.name }} <br/>
+                        </div>
+                        <div class="form-group col-lg-12 space-inside-md">
+                            <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </app-overlay>
+
+    <!--FORM UPDATE-->
     <app-overlay *ngIf="overlaySelected">
         <div class="container">
             <div class="col-lg-10">
@@ -92,6 +118,12 @@
                             <div *ngIf="f.submitted && !heat_type.valid" class="help-block">Type hitte is verplicht</div>
                         </div>
                         <div class="form-group">
+                            <label for="combine_with">Combineer met product</label>
+                            <select class="form-control" id="combine_with" name="combine_with" [(ngModel)]="selectedProduct.combine_with" #combine_with="ngModel" required>
+                                <option *ngFor="let product of products" [value]="product.id">{{ product.name }}</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
                         </div>
                     </form>
@@ -101,13 +133,14 @@
         </div>
     </app-overlay>
 
+    <!--FORM TOEVOEGEN -->
     <app-overlay *ngIf="overlayOpen">
         <div class="container">
             <div class="col-lg-10">
                 <span (click)="hideOverlay()" class="right pointer font-lg text-hover-main transition-normal"><i class="material-icons">close</i></span>
 
                 <div class="space-inside-lg">
-                    <form name="form" method="POST" (ngSubmit)="f.form.valid && create()" #f="ngForm" novalidate>
+                    <form name="form" method="POST" (ngSubmit)="f.form.valid && combineProduct()" #f="ngForm" novalidate>
                         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !name.valid }">
                             <label for="name">Naam</label>
                             <input class="form-control" type="text" id="name" name="name" [(ngModel)]="model.name" #name="ngModel" required/>
@@ -178,13 +211,17 @@
                             <div *ngIf="f.submitted && !heat_type.valid" class="help-block">Type hitte is verplicht</div>
                         </div>
                         <div class="form-group">
-                            <label>Combineer met product</label>
-                            <select class="form-control" name="combine_with" [(ngModel)]="model.combine_with" #combine_with="ngModel" required>
-                                <option *ngFor="let product of products" [value]="product.id">{{ product.name }}</option>
-                            </select>
+                            <div class="col-lg-12 reset-padding">
+                                <label for="combine_with">Combineer met product</label>
+                            </div>
+                            <div class="col-lg-4" *ngFor="let product of products; let i = index">
+                                <input class="space-inside-sides-xs" type="checkbox" name="combine_with[]" [(ngModel)]="selectedCombinedProducts[product.id]"  [value]="product.id" >{{ product.name }} <br/>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
+                            <div class="col-lg-12 space-inside-md reset-padding">
+                                <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -196,7 +233,7 @@
   <app-read>
 
       <tr>
-          <th>ID</th>
+          <th>#</th>
           <th>Naam</th>
           <th>Code</th>
           <th>Beschrijving</th>
@@ -204,6 +241,7 @@
           <th>Alpha</th>
           <th>Alpha Reflective</th>
           <th>Alpha White</th>
+          <th>Beschikbaarheid per land</th>
           <th>Aanpassen</th>
           <th>Verwijderen</th>
       </tr>
@@ -221,7 +259,7 @@
               {{ product.description }}
           </td>
           <td>
-              {{ productLines[product.product_line_id].name }}
+              {{ productLines[product.product_line_id - 1].name }}
           </td>
           <td>
             {{ product.alpha }}
@@ -231,6 +269,9 @@
           </td>
           <td>
             {{ product.alpha_white }}
+          </td>
+          <td>
+            <button (click)="viewCountries(product.id)" type="button" class="btn bg-main transition-normal text-color-light">Landen</button>
           </td>
           <td>
               <button (click)="viewDetails(product.id)" type="button" class="btn btn-primary transition-normal"><i class="material-icons">assignment</i></button>

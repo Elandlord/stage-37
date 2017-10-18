@@ -119,4 +119,9 @@ body {
         position: relative;
         margin-right: 0;
     }
+
+    .step{
+        opacity: 1;
+        transition: .5s ease-in-out-all;
+    }
 }/* You can add global styles to this file, and also import other style files */

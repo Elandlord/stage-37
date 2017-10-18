@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { Article} from '../../models/article/article';
+import { Category } from '../../models/category/category';
 import {ApiService} from '../../core/api.service';
 
 @Component({
@@ -16,6 +17,7 @@ export class ArticleComponent implements OnInit {
 
     model: any = {};
     articles: Article[];
+    categories: Category[];
 
     selectedArticle: any = {};
     overlaySelected = false;
@@ -59,6 +61,14 @@ export class ArticleComponent implements OnInit {
         });
     }
 
+    getCategories()
+    {
+        this.apiService.get('categories').then((categories) => {
+            this.categories = categories;
+            this.loading = false;
+        });
+    }
+
     hideOverlay()
     {
         this.overlayOpen = false;
@@ -68,6 +78,7 @@ export class ArticleComponent implements OnInit {
     ngOnInit()
     {
         this.getArticles();
+        this.getCategories();
     }
 
     update(id)

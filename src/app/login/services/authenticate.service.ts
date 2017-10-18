@@ -19,7 +19,7 @@ export class AuthenticateService {
 
       const body = new URLSearchParams();
       body.append('client_id', '1');
-      body.append('client_secret', 'KYPNzeZY9jYlRYOncvNqONYNp8a0KIiI4ZR0eQtk');
+      body.append('client_secret', 'U0m8FAeXTFMeocsfPeJDvEaGh7BaUJiUF3C6htR6');
       body.append('scope', '');
       body.append('grant_type', 'password');
       body.append('username', username);

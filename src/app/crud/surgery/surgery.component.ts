@@ -72,7 +72,7 @@ export class SurgeryComponent implements OnInit {
 
     update(id)
     {
-        this.apiService.update('operation', this.selectedSurgery, id).then(() => {
+        this.apiService.update('surgery', this.selectedSurgery, id).then(() => {
             this.getSurgeries();
             this.hideOverlay();
         })
