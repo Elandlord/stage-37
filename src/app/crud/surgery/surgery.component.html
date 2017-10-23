@@ -29,7 +29,7 @@
             <div class="form-group" [ngClass]="{ 'has-error': f.submitted
             && !surface.valid }">
               <label for="surface">Surface</label>
-              <input class="form-control" type="text" id="surface" name="surface" [(ngModel)]="selectedSurgery.surface" #surface="ngModel" required/>
+              <input class="form-control" type="number" step="0.01" id="surface" name="surface" [(ngModel)]="selectedSurgery.surface" #surface="ngModel" required/>
               <div *ngIf="f.submitted && !surface.valid" class="help-block">Surface is verplicht</div>
             </div>
             <div class="form-group"  [ngClass]="{ 'has-error': f.submitted && !type.valid }">
@@ -64,7 +64,7 @@
             </div>
             <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !surface.valid }">
               <label for="surface">Surface</label>
-              <input class="form-control" type="text" id="surface" name="surface" [(ngModel)]="model.surface" #surface="ngModel" required/>
+              <input class="form-control" type="number" step="0.01"  id="surface" name="surface" [(ngModel)]="model.surface" #surface="ngModel" required/>
               <div *ngIf="f.submitted && !surface.valid" class="help-block">Surface is verplicht</div>
             </div>
             <div class="form-group"  [ngClass]="{ 'has-error': f.submitted && !type.valid }">

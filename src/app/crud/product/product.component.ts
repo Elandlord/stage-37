@@ -70,7 +70,17 @@ export class ProductComponent implements OnInit {
     this.overlayOpen = true;
   }
 
-  addSurgery(id)
+  addPositionToSurgery(surgery_id, position_id)
+  {
+
+  }
+
+  addSurfaceToSurgeryPosition(surgery_id, position_id, event: any)
+  {
+
+  }
+
+  toggleSurgery(id)
   {
     const indexArray = this.selectedSurgeries.indexOf(id);
     if (indexArray === -1){
@@ -93,10 +103,7 @@ export class ProductComponent implements OnInit {
 
   combineProduct()
   {
-    for (const productIndex in this.selectedCombinedProducts)
-    {
-        this.combinedProductsArray.push(productIndex);
-    }
+    _.forEach(this.selectedCombinedProducts, (productIndex) => this.combinedProductsArray.push(productIndex));
     this.model.combined_with = this.combinedProductsArray;
     this.create();
   }
@@ -112,11 +119,7 @@ export class ProductComponent implements OnInit {
   fillCountries()
   {
     // to-do: fill selectedCountry array with data from API call. Currently not getting country data per product.
-    for (const country of this.countries)
-    {
-      this.unselectedCountries.push(country.id);
-    }
-
+    _.forEach(this.countries, (country) => this.unselectedCountries.push(country.id));
   }
 
   getCountries()
@@ -139,7 +142,7 @@ export class ProductComponent implements OnInit {
 
   getPositions()
   {
-    this.apiService.get('positions/').then((positions) => {
+    this.apiService.get('positions').then((positions) => {
       this.positions = positions;
     });
   }

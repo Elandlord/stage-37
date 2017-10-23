@@ -15,6 +15,37 @@
     </div>
   </div>
 
+  <app-overlay *ngIf="overlayProducts">
+    <div class="container">
+      <div class="col-lg-10 space-inside-sides-xl">
+        <span (click)="hideOverlay()" class="right pointer font-lg text-hover-main transition-normal"><i class="material-icons">close</i></span>
+
+        <div class="col-lg-12 space-inside-md">
+          <h4 class="text-thin ">Advies: <span class="text-bold">{{ selectedAdvice.name }}</span></h4>
+          <p class="text-color-accent space-inside-down-sm">Selecteer producten waarvoor dit advies geldt.</p>
+
+
+          <form name="form" method="POST" (ngSubmit)="f.form.valid && updateProducts(selectedAdvice.id)" #f="ngForm" novalidate>
+            <h4>Geselecteerde producten</h4>
+            <div *ngFor="let productID of selectedProducts; let i = index">
+              <input type="checkbox" [id]="productID" [name]="productID" checked="yes" (change)="unselectProduct(productID)"><label class="pointer text-light space-inside-left-xs" [for]="productID">{{ getProductNameById(productID) }}</label>
+            </div>
+
+            <h4 class="space-inside-up-sm">Niet-geselecteerde producten</h4>
+            <div *ngFor="let productID of unselectedProducts; let i = index">
+              <input type="checkbox" [id]="productID" [name]="productID" (change)="selectProduct(productID)"><label class="pointer text-light space-inside-left-xs" [for]="productID">{{ getProductNameById(productID) }}</label>
+            </div>
+
+            <div class="form-group col-lg-12 space-inside-md">
+              <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </app-overlay>
+
   <app-overlay *ngIf="overlaySelected">
     <div class="container">
       <div class="col-lg-10 space-inside-sides-xl">
@@ -48,15 +79,39 @@
 
         <div class="space-inside-lg">
           <form name="form" method="POST" (ngSubmit)="f.form.valid && create()" #f="ngForm" novalidate>
-            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !order.valid }">
-              <label for="order">Order</label>
-              <input class="form-control" type="text" id="order" name="order" [(ngModel)]="model.order" #order="ngModel" required/>
-              <div *ngIf="f.submitted && !order.valid" class="help-block">Order is verplicht</div>
-            </div>
             <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !name.valid }">
               <label for="name">Naam</label>
               <input class="form-control" type="text" id="name" name="name" [(ngModel)]="model.name" #name="ngModel" required/>
               <div *ngIf="f.submitted && !name.valid" class="help-block">Naam is verplicht</div>
+            </div>
+            <div class="space-inside-xs" *ngFor="let surgery of surgeries; let i = index">
+
+              <input type="checkbox" [id]="surgery.name" (change)="addSurgery(surgery.id)" class="inline-block space-inside-right-md">
+              <label [for]="surgery.name" class="inline-block pointer"><h5 class="text-thin">Operatie: <span class="text-bold">{{ surgery.name }}</span></h5></label>
+
+              <div *ngIf="surgeryInArray(surgery.id)" class="animated fadeIn">
+                <table class="table shadow-xs">
+                  <thead class="thead-inverse">
+                  <tr>
+                    <th>Check</th>
+                    <th>Posities</th>
+                    <th>Surface Area</th>
+                  </tr>
+                  </thead>
+                  <tr *ngFor="let position of positions; let i = index">
+
+                    <td class="td-max-input"><input [id]="position.id" type="checkbox" /></td>
+                    <td class="td-max-input"><label class="pointer text-thin" [for]="position.id">{{ position.name }}</label></td>
+                    <td class="td-max-input"><input [name]="position.name" [(ngModel)]="selectedPositionsPerSurgery[position.id]" class="form-control" type="number" step="0.01" placeholder="Surface" /></td>
+                  </tr>
+                </table>
+              </div>
+              <hr/>
+            </div>
+            <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !order.valid }">
+              <label for="order">Order</label>
+              <input class="form-control" type="text" id="order" name="order" [(ngModel)]="model.order" #order="ngModel" required/>
+              <div *ngIf="f.submitted && !order.valid" class="help-block">Order is verplicht</div>
             </div>
             <div class="form-group">
               <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
@@ -75,6 +130,7 @@
         <th>#</th>
         <th>Order</th>
         <th>Naam</th>
+        <th>Producten</th>
         <th>Aanpassen</th>
         <th>Verwijderen</th>
       </tr>
@@ -89,6 +145,9 @@
       </th>
       <td>
         {{ advice.name }}
+      </td>
+      <td>
+        <button (click)="viewProducts(advice.id)" type="button" class="btn btn-success transition-normal text-color-light">Producten</button>
       </td>
       <td>
         <button (click)="viewDetails(advice.id)" type="button" class="btn btn-primary transition-normal"><i class="material-icons">assignment</i></button>

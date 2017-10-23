@@ -16,12 +16,14 @@
     </div>
 
     <div class="container" *ngIf="!loading">
-        <div class="col-lg-10 space-inside-down-sm text-left">
-            <div class="form-group">
-                <form>
-                    <input type="text" (keyup)="setSearchParam($event)" class="form-control" placeholder="Zoek product..." />
-                </form>
-            </div>
+        <div class="col-lg-10 space-inside-down-sm">
+            <form class="text-left">
+                <div>
+                    <span>
+                        <input type="text" (keyup)="setSearchParam($event)" class="form-control inline-block" placeholder="Zoek product..." />
+                    </span>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -38,7 +40,7 @@
                         <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal space-inside-down-sm">Opslaan</button>
                         <div class="space-inside-xs" *ngFor="let surgery of surgeries; let i = index">
 
-                            <input type="checkbox" [id]="surgery.name" (change)="addSurgery(surgery.id)" class="inline-block space-inside-right-md">
+                            <input type="checkbox" [id]="surgery.name" (change)="toggleSurgery(surgery.id)" class="inline-block space-inside-right-md">
                             <label [for]="surgery.name" class="inline-block pointer"><h5 class="text-thin">Operatie: <span class="text-bold">{{ surgery.name }}</span></h5></label>
 
                             <div *ngIf="surgeryInArray(surgery.id)" class="animated fadeIn">
@@ -52,9 +54,9 @@
                                     </thead>
                                     <tr *ngFor="let position of positions; let i = index">
 
-                                            <td class="td-max-input"><input [id]="position.id" type="checkbox" /></td>
-                                            <td class="td-max-input"><label class="pointer text-thin" [for]="position.id">{{ position.name }}</label></td>
-                                            <td class="td-max-input"><input [name]="position.name" [(ngModel)]="selectedPositionsPerSurgery[surgery.id][position.id]" class="form-control" type="text" placeholder="Surface" /></td>
+                                            <td class="td-max-input"><input [id]="surgery.id + position.name" (change)="addPositionToSurgery(surgery.id, position.id)" type="checkbox" /></td>
+                                            <td class="td-max-input"><label class="pointer text-thin" [for]="surgery.id + position.name">{{ position.name }}</label></td>
+                                            <td class="td-max-input"><input [name]="position.name" (keyup)="addSurfaceToSurgeryPosition(surgery.id, position.id, $event)" class="form-control" type="number" step="0.01" placeholder="Surface" /></td>
                                     </tr>
                                 </table>
                             </div>
