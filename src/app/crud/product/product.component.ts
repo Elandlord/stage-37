@@ -1,5 +1,7 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
 
+import * as _ from 'lodash';
+
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
 import { Country } from '../../models/country/country';
@@ -45,17 +47,19 @@ export class ProductComponent implements OnInit {
 
   // Products
   products: Product[];
+  referenceProducts: Product[];
   selectedCombinedProducts: any = {};
   combinedProductsArray: any = [];
   selectedProduct: any = {};
 
+
   // product from search
-  searchProducts: any = {};
+  searchProducts: Product[];
 
   // Surgeries
   surgeries: Surgery[];
   selectedSurgeries: any = [];
-  selectedPositionsPerSurgery: any = [];
+  selectedPositionsPerSurgery: any = {};
 
   constructor(private apiService: ApiService, public toastr: ToastsManager, vcr: ViewContainerRef) {
       this.toastr.setRootViewContainerRef(vcr);
@@ -153,6 +157,7 @@ export class ProductComponent implements OnInit {
     this.loading = true;
       this.apiService.get('products').then((products) => {
           this.products = products;
+          this.referenceProducts = products;
           this.loading = false;
       });
   }
@@ -234,18 +239,10 @@ export class ProductComponent implements OnInit {
 
   setSearchParam(event: any)
   {
+      this.searchProducts = _.filter(this.referenceProducts, (product) => {
+        return product.name.toLowerCase().match(event.target.value.toLowerCase());
+      });
 
-      for (let i = 0; i < this.products.length - 1; i++)
-      {
-        if (this.products[i].name.match(event.target.value))
-        {
-          this.searchProducts[i] = this.products[i];
-        }else{
-          this.searchProducts[i] = {};
-        }
-      }
-
-      console.log(this.searchProducts);
       this.products = this.searchProducts;
   }
 
@@ -275,24 +272,23 @@ export class ProductComponent implements OnInit {
 
   selectAllCountries() {
     this.allCountriesSelected = !this.allCountriesSelected;
+
+
+
     if (this.allCountriesSelected)
     {
-        for (const country of this.countries)
-        {
-            if (this.selectedCountries.indexOf(country.id) === -1)
-            {
-                this.selectCountry(country.id);
-            }
-        }
+        _.filter(this.countries, (country) => {
+          return this.selectedCountries.indexOf(country.id) === -1;
+        }).forEach((country) => {
+          this.selectCountry(country.id);
+        });
     }else
     {
-        for (const country of this.countries)
-        {
-          if (this.selectedCountries.indexOf(country.id) !== -1)
-          {
+        _.filter(this.countries, (country) => {
+            return this.selectedCountries.indexOf(country.id) !== -1;
+        }).forEach((country) => {
             this.unselectCountry(country.id);
-          }
-        }
+        });
     }
 
   }

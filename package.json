@@ -21,8 +21,10 @@
     "@angular/platform-browser": "^4.2.4",
     "@angular/platform-browser-dynamic": "^4.2.4",
     "@angular/router": "^4.2.4",
+    "@types/lodash": "^4.14.77",
     "bootstrap": "^3.3.7",
     "core-js": "^2.4.1",
+    "lodash": "^4.17.4",
     "ng2-toastr": "^4.1.2",
     "rxjs": "^5.4.2",
     "zone.js": "^0.8.14"

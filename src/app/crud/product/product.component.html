@@ -15,15 +15,15 @@
         </div>
     </div>
 
-    <!--<div class="container" *ngIf="!loading">-->
-        <!--<div class="col-lg-10 space-inside-down-sm text-left">-->
-            <!--<div class="form-group">-->
-                <!--<form>-->
-                    <!--<input type="text" (keyup)="setSearchParam($event)" class="form-control" placeholder="Zoek product..." />-->
-                <!--</form>-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</div>-->
+    <div class="container" *ngIf="!loading">
+        <div class="col-lg-10 space-inside-down-sm text-left">
+            <div class="form-group">
+                <form>
+                    <input type="text" (keyup)="setSearchParam($event)" class="form-control" placeholder="Zoek product..." />
+                </form>
+            </div>
+        </div>
+    </div>
 
     <!--FORM COUNTRIES-->
     <app-overlay *ngIf="overlaySurgery">
@@ -54,7 +54,7 @@
 
                                             <td class="td-max-input"><input [id]="position.id" type="checkbox" /></td>
                                             <td class="td-max-input"><label class="pointer text-thin" [for]="position.id">{{ position.name }}</label></td>
-                                            <td class="td-max-input"><input [name]="position.name" [(ngModel)]="selectedPositionsPerSurgery[position.id]" class="form-control" type="text" placeholder="Surface" /></td>
+                                            <td class="td-max-input"><input [name]="position.name" [(ngModel)]="selectedPositionsPerSurgery[surgery.id][position.id]" class="form-control" type="text" placeholder="Surface" /></td>
                                     </tr>
                                 </table>
                             </div>
