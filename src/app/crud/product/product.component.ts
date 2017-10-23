@@ -72,12 +72,22 @@ export class ProductComponent implements OnInit {
 
   addPositionToSurgery(surgery_id, position_id)
   {
+    if(this.selectedPositionsPerSurgery[surgery_id] === undefined)
+    {
+        this.selectedPositionsPerSurgery[surgery_id] = {
+            positions: {}
+        };
+    }
+
+    this.selectedPositionsPerSurgery[surgery_id].positions[position_id] = new Position(position_id);
 
   }
 
   addSurfaceToSurgeryPosition(surgery_id, position_id, event: any)
   {
+    this.selectedPositionsPerSurgery[surgery_id].positions[position_id].surface_area = event.target.value;
 
+    console.log(this.selectedPositionsPerSurgery);
   }
 
   toggleSurgery(id)
