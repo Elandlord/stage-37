@@ -9,6 +9,7 @@ import { Position } from '../../models/position/position';
 import { Product } from '../../models/product/product';
 import {Surgery } from '../../models/surgery/surgery';
 import { ProductLine } from '../../models/product-line/product-line';
+import { ProductSetting } from '../../models/product-setting/product-setting';
 import {ApiService} from '../../core/api.service';
 
 @Component({
@@ -32,6 +33,7 @@ export class ProductComponent implements OnInit {
   overlaySelected = false;
   overlayCountry = false;
   overlaySurgery = false;
+  overlaySettings = false;
 
   // Countries
   countries: Country[];
@@ -52,9 +54,11 @@ export class ProductComponent implements OnInit {
   combinedProductsArray: any = [];
   selectedProduct: any = {};
 
-
   // product from search
   searchProducts: Product[];
+
+  // Productsetings
+  productSettings: ProductSetting[];
 
   // Surgeries
   surgeries: Surgery[];
@@ -72,22 +76,31 @@ export class ProductComponent implements OnInit {
 
   addPositionToSurgery(surgery_id, position_id)
   {
-    if(this.selectedPositionsPerSurgery[surgery_id] === undefined)
+    if (this.selectedPositionsPerSurgery[surgery_id] === undefined)
     {
         this.selectedPositionsPerSurgery[surgery_id] = {
             positions: {}
         };
     }
-
     this.selectedPositionsPerSurgery[surgery_id].positions[position_id] = new Position(position_id);
-
   }
 
   addSurfaceToSurgeryPosition(surgery_id, position_id, event: any)
   {
     this.selectedPositionsPerSurgery[surgery_id].positions[position_id].surface_area = event.target.value;
+  }
 
-    console.log(this.selectedPositionsPerSurgery);
+  toggleCombinedProduct(id)
+  {
+    const indexArray = this.combinedProductsArray.indexOf(id);
+    if (indexArray === -1)
+    {
+        this.combinedProductsArray.push(id);
+    }else
+    {
+        this.combinedProductsArray.pop(indexArray);
+    }
+    console.log(this.combinedProductsArray);
   }
 
   toggleSurgery(id)
@@ -98,8 +111,16 @@ export class ProductComponent implements OnInit {
     }else{
         this.selectedSurgeries.pop(indexArray);
     }
+  }
 
-    console.log(this.selectedSurgeries);
+  checkProductCombined(id)
+  {
+    const indexArray = this.combinedProductsArray.indexOf(id);
+    if (indexArray === -1)
+    {
+      return '';
+    }
+    return 'checked';
   }
 
   create()
@@ -113,7 +134,6 @@ export class ProductComponent implements OnInit {
 
   combineProduct()
   {
-    _.forEach(this.selectedCombinedProducts, (productIndex) => this.combinedProductsArray.push(productIndex));
     this.model.combined_with = this.combinedProductsArray;
     this.create();
   }
@@ -126,10 +146,24 @@ export class ProductComponent implements OnInit {
     });
   }
 
+  fillCombinedProducts()
+  {
+    _.forEach(this.products, (product) => {
+      _.forEach(product.combine_with, (combinedProduct) => {
+          this.combinedProductsArray.push(combinedProduct);
+      });
+    });
+  }
+
   fillCountries()
   {
     // to-do: fill selectedCountry array with data from API call. Currently not getting country data per product.
     _.forEach(this.countries, (country) => this.unselectedCountries.push(country.id));
+  }
+
+  fillProductSettings()
+  {
+
   }
 
   getCountries()
@@ -197,6 +231,13 @@ export class ProductComponent implements OnInit {
     });
   }
 
+  getProductSettings()
+  {
+    this.apiService.get('productsettings').then((productsettings) => {
+        this.productSettings = productsettings;
+    });
+  }
+
   getSurgeries()
   {
     this.apiService.get('surgeries').then((surgeries) => {
@@ -210,6 +251,7 @@ export class ProductComponent implements OnInit {
     this.overlaySelected = false;
     this.overlayCountry = false;
     this.overlaySurgery = false;
+    this.overlaySettings = false;
   }
 
   loadProduct(id)
@@ -225,6 +267,7 @@ export class ProductComponent implements OnInit {
     this.getCountries();
     this.getPositions();
     this.getSurgeries();
+    this.getProductSettings();
   }
 
   update(id)
@@ -240,6 +283,7 @@ export class ProductComponent implements OnInit {
   {
     // Product
     this.selectedProduct = {};
+    this.combinedProductsArray = [];
 
     // Countries
     this.selectedCountries = [];
@@ -278,15 +322,19 @@ export class ProductComponent implements OnInit {
     this.reset();
   }
 
+  updateProductSettings(id)
+  {
+
+  }
+
   updateSurgeries(id)
   {
+    // TO-DO POST values to DB via update
       console.log(this.selectedPositionsPerSurgery);
   }
 
   selectAllCountries() {
     this.allCountriesSelected = !this.allCountriesSelected;
-
-
 
     if (this.allCountriesSelected)
     {
@@ -317,6 +365,8 @@ export class ProductComponent implements OnInit {
 
   viewDetails(id)
   {
+    this.reset();
+    this.fillCombinedProducts();
     this.getProduct(id);
   }
 
@@ -333,5 +383,13 @@ export class ProductComponent implements OnInit {
     this.loadProduct(id);
     this.fillCountries();
     this.overlayCountry = true;
+  }
+
+  viewProductSettings(id)
+  {
+    this.reset();
+    this.loadProduct(id);
+    this.fillProductSettings();
+    this.overlaySettings = true;
   }
 }

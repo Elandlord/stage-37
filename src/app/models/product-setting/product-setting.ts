@@ -1,4 +1,5 @@
 export class ProductSetting {
+    id: number;
     product_id: number;
     name: string;
     input_type: string;
