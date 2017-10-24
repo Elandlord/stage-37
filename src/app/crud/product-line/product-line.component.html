@@ -19,7 +19,10 @@
     <div class="container">
       <div class="col-lg-10 space-inside-sides-xl">
         <span (click)="hideOverlay()" class="right pointer font-lg text-hover-main transition-normal"><i class="material-icons">close</i></span>
-          <div class="space-inside-lg">
+
+        <h4 class="text-thin ">Productlijn <span class="text-bold">aanpassen</span></h4>
+        <p class="text-color-accent space-inside-down-sm">Voer de juiste gegevens in.</p>
+          <div class="space-inside-sm">
             <form name="form" method="POST" (ngSubmit)="f.form.valid && update(selectedProductLine.id)" #f="ngForm" novalidate>
               <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !name.valid }">
                 <label for="name">Naam</label>
@@ -53,7 +56,9 @@
       <div class="col-lg-10 space-inside-sides-xl">
         <span (click)="hideOverlay()" class="right pointer font-lg text-hover-main transition-normal"><i class="material-icons">close</i></span>
 
-        <div class="space-inside-lg">
+        <h4 class="text-thin ">Productlijn <span class="text-bold">toevoegen</span></h4>
+        <p class="text-color-accent space-inside-down-sm">Voer de juiste gegevens in.</p>
+        <div class="space-inside-sm">
           <form name="form" method="POST" (ngSubmit)="f.form.valid && create()" #f="ngForm" novalidate>
             <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !name.valid }">
               <label for="name">Naam</label>

@@ -19,7 +19,7 @@
         <div class="col-lg-10 space-inside-down-sm">
             <div class="form-group">
                 <input type="text" (keyup)="setSearchParam($event)" class="form-control inline-block" placeholder="Zoek product..." />
-                <i class="glyphicon glyphicon-search form-control-feedback pointer bg-tertiary text-color-light"></i>
+                <i class="glyphicon glyphicon-search form-control-feedback bg-tertiary text-color-light pointer"></i>
             </div>
         </div>
     </div>
@@ -34,14 +34,17 @@
                     <p class="text-color-accent space-inside-down-sm">Selecteer de juiste instellingen.</p>
 
                     <form name="form" method="POST" (ngSubmit)="f.form.valid && updateProductSettings(selectedProduct.id)" #f="ngForm" novalidate>
-                        <div class="col-lg-4" *ngFor="let productsetting of productSettings; let i = index">
-                            <input class="space-inside-sides-xs" type="checkbox" [id]="productsetting.id" (change)="toggleCombinedProduct(productsetting.id)"><label [for]="productsetting.id" class="text-light pointer space-inside-left-xs">{{ productsetting.name }}</label>  <br/>
+                        <div *ngIf="selectedProductSettings.length === 0">
+                            Er zijn geen settings gekoppeld aan dit product. Het koppelen kan gedaan worden onder "Productinstellingen".
+                        </div>
+                        <div class="col-lg-4" *ngFor="let productsetting of selectedProductSettings; let i = index">
+                            <input class="space-inside-sides-xs" type="checkbox" [id]="productsetting.id" (change)="toggleProductSetting(productsetting.id)"><label [for]="productsetting.id" class="text-light pointer space-inside-left-xs">{{ productsetting.name }}</label>  <br/>
+                        </div>
+                        <div class="form-group col-lg-12 space-inside-md" *ngIf="selectedProductSettings.length > 0">
+
+                            <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
                         </div>
                     </form>
-
-                    <div class="form-group col-lg-12 space-inside-md">
-                        <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -137,7 +140,9 @@
             <div class="col-lg-10">
                 <span (click)="hideOverlay()" class="right pointer font-lg text-hover-main transition-normal"><i class="material-icons">close</i></span>
 
-                <div class="space-inside-lg">
+                <h4 class="text-thin ">Product <span class="text-bold">aanpassen</span></h4>
+                <p class="text-color-accent space-inside-down-sm">Voer de juiste gegevens in.</p>
+                <div class="space-inside-sm">
                     <form name="form" method="POST" (ngSubmit)="f.form.valid && update(selectedProduct.id)" #f="ngForm" novalidate>
                         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !name.valid }">
                             <label for="name">Naam</label>
@@ -163,13 +168,13 @@
                         </div>
                         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !insulating_factor_with_gown.valid }">
                             <label for="insulating_factor_with_gown">Isolatiefactor met outfit</label>
-                            <input type="text" class="form-control" id="insulating_factor_with_gown"
+                            <input type="number" step="0.01"  class="form-control" id="insulating_factor_with_gown"
                                    name="insulating_factor_with_gown" [(ngModel)]="selectedProduct.insulating_factor_with_gown" #insulating_factor_with_gown="ngModel" required/>
                             <div *ngIf="f.submitted && !insulating_factor_with_gown.valid" class="help-block">Isolatiefactor met outfit is verplicht</div>
                         </div>
                         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !insulating_factor_without_gown.valid }">
                             <label for="insulating_factor_without_gown">Isolatiefactor zonder outfit</label>
-                            <input type="text" class="form-control" id="insulating_factor_without_gown"
+                            <input type="number" step="0.01"  class="form-control" id="insulating_factor_without_gown"
                                    name="insulating_factor_without_gown" [(ngModel)]="selectedProduct.insulating_factor_without_gown" #insulating_factor_without_gown="ngModel" required/>
                             <div *ngIf="f.submitted && !insulating_factor_without_gown.valid" class="help-block">Isolatiefactor zonder outfit is verplicht</div>
                         </div>
@@ -184,17 +189,17 @@
                         </div>
                         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !alpha.valid }">
                             <label for="alpha">Alpha</label>
-                            <input type="text" class="form-control" id="alpha" name="alpha" [(ngModel)]="selectedProduct.alpha" #alpha="ngModel" required/>
+                            <input type="number" step="0.01"  class="form-control" id="alpha" name="alpha" [(ngModel)]="selectedProduct.alpha" #alpha="ngModel" required/>
                             <div *ngIf="f.submitted && !alpha.valid" class="help-block">Alpha is verplicht</div>
                         </div>
                         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !alpha_white.valid }">
                             <label for="alpha_white">Alpha White</label>
-                            <input type="text" class="form-control" id="alpha_white" name="alpha_white" [(ngModel)]="selectedProduct.alpha_white" #alpha_white="ngModel" required/>
+                            <input type="number" step="0.01"  class="form-control" id="alpha_white" name="alpha_white" [(ngModel)]="selectedProduct.alpha_white" #alpha_white="ngModel" required/>
                             <div *ngIf="f.submitted && !alpha_white.valid" class="help-block">Alpha White is verplicht</div>
                         </div>
                         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !alpha_reflective.valid }">
                             <label for="alpha_reflective">Alpha Reflective</label>
-                            <input type="text" class="form-control" id="alpha_reflective" name="alpha_reflective"
+                            <input type="number" step="0.01"  class="form-control" id="alpha_reflective" name="alpha_reflective"
                                    [(ngModel)]="selectedProduct.alpha_reflective" #alpha_reflective="ngModel" required/>
                             <div *ngIf="f.submitted && !alpha_reflective.valid" class="help-block">Alpha Reflective is verplicht</div>
                         </div>
@@ -233,7 +238,9 @@
         <div class="container">
             <div class="col-lg-10">
                 <span (click)="hideOverlay()" class="right pointer font-lg text-hover-main transition-normal"><i class="material-icons">close</i></span>
-                <div class="space-inside-lg">
+                <h4 class="text-thin ">Product <span class="text-bold">toevoegen</span></h4>
+                <p class="text-color-accent space-inside-down-sm">Voer de juiste gegevens in.</p>
+                <div class="space-inside-sm">
                     <form name="form" method="POST" (ngSubmit)="f.form.valid && combineProduct()" #f="ngForm" novalidate>
                         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !name.valid }">
                             <label for="name">Naam</label>
@@ -259,13 +266,13 @@
                         </div>
                         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !insulating_factor_with_gown.valid }">
                             <label for="insulating_factor_with_gown">Isolatiefactor met outfit</label>
-                            <input type="text" class="form-control" id="insulating_factor_with_gown"
+                            <input type="number" step="0.01"  class="form-control" id="insulating_factor_with_gown"
                                    name="insulating_factor_with_gown" [(ngModel)]="model.insulating_factor_with_gown" #insulating_factor_with_gown="ngModel" required/>
                             <div *ngIf="f.submitted && !insulating_factor_with_gown.valid" class="help-block">Isolatiefactor met outfit is verplicht</div>
                         </div>
                         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !insulating_factor_without_gown.valid }">
                             <label for="insulating_factor_without_gown">Isolatiefactor zonder outfit</label>
-                            <input type="text" class="form-control" id="insulating_factor_without_gown"
+                            <input type="number" step="0.01"  class="form-control" id="insulating_factor_without_gown"
                                    name="insulating_factor_without_gown" [(ngModel)]="model.insulating_factor_without_gown" #insulating_factor_without_gown="ngModel" required/>
                             <div *ngIf="f.submitted && !insulating_factor_without_gown.valid" class="help-block">Isolatiefactor zonder outfit is verplicht</div>
                          </div>
@@ -280,17 +287,17 @@
                         </div>
                         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !alpha.valid }">
                             <label for="alpha">Alpha</label>
-                            <input type="text" class="form-control" id="alpha" name="alpha" [(ngModel)]="model.alpha" #alpha="ngModel" required/>
+                            <input type="number" step="0.01" class="form-control" id="alpha" name="alpha" [(ngModel)]="model.alpha" #alpha="ngModel" required/>
                             <div *ngIf="f.submitted && !alpha.valid" class="help-block">Alpha is verplicht</div>
                         </div>
                         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !alpha_white.valid }">
                             <label for="alpha_white">Alpha White</label>
-                            <input type="text" class="form-control" id="alpha_white" name="alpha_white" [(ngModel)]="model.alpha_white" #alpha_white="ngModel" required/>
+                            <input type="number" step="0.01" class="form-control" id="alpha_white" name="alpha_white" [(ngModel)]="model.alpha_white" #alpha_white="ngModel" required/>
                             <div *ngIf="f.submitted && !alpha_white.valid" class="help-block">Alpha White is verplicht</div>
                         </div>
                         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !alpha_reflective.valid }">
                             <label for="alpha_reflective">Alpha Reflective</label>
-                            <input type="text" class="form-control" id="alpha_reflective" name="alpha_reflective"
+                            <input type="number" step="0.01" class="form-control" id="alpha_reflective" name="alpha_reflective"
                                    [(ngModel)]="model.alpha_reflective" #alpha_reflective="ngModel" required/>
                             <div *ngIf="f.submitted && !alpha_reflective.valid" class="help-block">Alpha Reflective is verplicht</div>
                         </div>

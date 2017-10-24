@@ -56,8 +56,6 @@ export class AdviceComponent implements OnInit {
         }else{
             this.selectedSurgeries.pop(indexArray);
         }
-
-        console.log(this.selectedSurgeries);
     }
 
     create()

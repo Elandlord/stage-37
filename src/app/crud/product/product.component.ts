@@ -59,6 +59,8 @@ export class ProductComponent implements OnInit {
 
   // Productsetings
   productSettings: ProductSetting[];
+  selectedProductSettings: any = {};
+  toggledProductSettings: any = [];
 
   // Surgeries
   surgeries: Surgery[];
@@ -100,7 +102,6 @@ export class ProductComponent implements OnInit {
     {
         this.combinedProductsArray.pop(indexArray);
     }
-    console.log(this.combinedProductsArray);
   }
 
   toggleSurgery(id)
@@ -127,9 +128,18 @@ export class ProductComponent implements OnInit {
   {
       this.apiService.post('products', this.model).then(() => {
           this.getProducts();
-          this.overlayOpen = false;
+          this.hideOverlay();
           this.toastr.success('Product succesvol toegevoegd.', 'Gelukt!');
       });
+  }
+
+  createProductSettings(product_id)
+  {
+    this.apiService.post('product/' + product_id + '/surgeryposition', this.selectedPositionsPerSurgery).then(() => {
+        this.getProducts();
+        this.hideOverlay();
+        this.toastr.success('Operaties en posities succesvol aangepast', 'Gelukt!');
+    });
   }
 
   combineProduct()
@@ -163,7 +173,9 @@ export class ProductComponent implements OnInit {
 
   fillProductSettings()
   {
-
+    this.selectedProductSettings = _.filter(this.productSettings, (productsetting) => {
+      return productsetting.product_id === this.selectedProduct.id;
+    });
   }
 
   getCountries()
@@ -258,6 +270,7 @@ export class ProductComponent implements OnInit {
   {
     this.apiService.get('product/' + id + '?include=countries').then( (product) => {
         this.selectedProduct = product;
+        this.fillProductSettings();
     });
   }
 
@@ -285,6 +298,10 @@ export class ProductComponent implements OnInit {
     this.selectedProduct = {};
     this.combinedProductsArray = [];
 
+    // Productsettings
+    this.selectedProductSettings = {};
+    this.toggledProductSettings = [];
+
     // Countries
     this.selectedCountries = [];
     this.unselectedCountries = [];
@@ -309,6 +326,16 @@ export class ProductComponent implements OnInit {
     this.selectedCountries.push(id);
   }
 
+  toggleProductSetting(id)
+  {
+      const indexArray = this.toggledProductSettings.indexOf(id);
+      if (indexArray === -1){
+          this.toggledProductSettings.push(id);
+      }else{
+          this.toggledProductSettings.pop(indexArray);
+      }
+  }
+
   unselectCountry(id)
   {
     this.selectedCountries.splice(this.selectedCountries.indexOf(id), 1);
@@ -324,13 +351,15 @@ export class ProductComponent implements OnInit {
 
   updateProductSettings(id)
   {
-
+    this.selectedProduct.productSettings = this.toggledProductSettings;
+    console.log(this.selectedProduct);
+    // this has to save to DB via update
   }
 
   updateSurgeries(id)
   {
-    // TO-DO POST values to DB via update
       console.log(this.selectedPositionsPerSurgery);
+      this.createProductSettings(id);
   }
 
   selectAllCountries() {
