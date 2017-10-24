@@ -133,9 +133,11 @@ export class ProductComponent implements OnInit {
       });
   }
 
-  createProductSettings(product_id)
+  createSurgeryPosition(product_id)
   {
-    this.apiService.post('product/' + product_id + '/surgeryposition', this.selectedPositionsPerSurgery).then(() => {
+    this.selectedProduct.surgery_position = this.selectedPositionsPerSurgery;
+    console.log(this.selectedProduct);
+    this.apiService.post('product/' + product_id + '/surgeryposition', this.selectedProduct).then(() => {
         this.getProducts();
         this.hideOverlay();
         this.toastr.success('Operaties en posities succesvol aangepast', 'Gelukt!');
@@ -349,17 +351,21 @@ export class ProductComponent implements OnInit {
     this.reset();
   }
 
+  updateProduct(id)
+  {
+    this.selectedProduct.combine_with = this.combinedProductsArray;
+    this.update(id);
+  }
+
   updateProductSettings(id)
   {
-    this.selectedProduct.productSettings = this.toggledProductSettings;
-    console.log(this.selectedProduct);
-    // this has to save to DB via update
+    this.selectedProduct.settings = this.toggledProductSettings;
+    this.update(id);
   }
 
   updateSurgeries(id)
   {
-      console.log(this.selectedPositionsPerSurgery);
-      this.createProductSettings(id);
+      this.createSurgeryPosition(id);
   }
 
   selectAllCountries() {

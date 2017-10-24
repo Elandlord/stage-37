@@ -40,7 +40,17 @@
               <div *ngIf="f.submitted && !category_id.valid" class="help-block">Categorie is verplicht</div>
             </div>
             <div class="form-group">
-              <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
+              <div class="col-lg-12 reset-padding">
+                <label>Koppel met rollen</label>
+              </div>
+              <div class="col-lg-4" *ngFor="let role of roles; let i = index">
+                <input class="space-inside-sides-xs" type="checkbox" [id]="role.id" (change)="toggleCombinedRoles(role.id)"><label [for]="role.id" class="text-light pointer space-inside-left-xs">{{ role.name }}</label>  <br/>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-lg-12 space-inside-md reset-padding">
+                <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
+              </div>
             </div>
           </form>
         </div>
@@ -75,7 +85,17 @@
               <div *ngIf="f.submitted && !category_id.valid" class="help-block">Categorie is verplicht</div>
             </div>
             <div class="form-group">
-              <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
+              <div class="col-lg-12 reset-padding">
+                <label>Koppel met rollen</label>
+              </div>
+              <div class="col-lg-4" *ngFor="let role of roles; let i = index">
+                <input class="space-inside-sides-xs" type="checkbox" [id]="role.id" (change)="toggleCombinedRoles(role.id)"><label [for]="role.id" class="text-light pointer space-inside-left-xs">{{ role.name }}</label>  <br/>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-lg-12 space-inside-md reset-padding">
+                <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
+              </div>
             </div>
           </form>
         </div>
@@ -90,7 +110,7 @@
         <th>#</th>
         <th>Naam</th>
         <th>Content</th>
-        <th>Categorie</th>
+        <!--<th>Categorie</th>-->
         <th>Aanpassen</th>
         <th>Verwijderen</th>
       </tr>
@@ -105,9 +125,6 @@
       </th>
       <td>
         {{ article.content }}
-      </td>
-      <td>
-        {{ categories[article.category_id].id }}
       </td>
       <td>
         <button (click)="viewDetails(article.id)" type="button" class="btn btn-primary transition-normal"><i class="material-icons">assignment</i></button>

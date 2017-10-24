@@ -4,6 +4,7 @@ import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
 import { Article} from '../../models/article/article';
 import { Category } from '../../models/category/category';
+import { Role } from "../../models/role/role";
 import {ApiService} from '../../core/api.service';
 
 @Component({
@@ -20,7 +21,9 @@ export class ArticleComponent implements OnInit {
     model: any = {};
     articles: Article[];
     categories: Category[];
+    roles: Role[];
 
+    combinedRoles: any = [];
     selectedArticle: any = {};
     overlaySelected = false;
 
@@ -35,6 +38,8 @@ export class ArticleComponent implements OnInit {
 
     create()
     {
+        this.model.roles = this.combinedRoles;
+        console.log(this.model);
         this.apiService.post('articles', this.model).then(() => {
             this.getArticles();
             this.overlayOpen = false;
@@ -75,6 +80,25 @@ export class ArticleComponent implements OnInit {
         });
     }
 
+    getCategoryNameById(id)
+    {
+        for (const category of this.categories)
+        {
+            if (category.id === id)
+            {
+                // Name is not in response
+                return category.id;
+            }
+        }
+    }
+
+    getRoles()
+    {
+        this.apiService.get('roles').then((roles) => {
+            this.roles = roles;
+        });
+    }
+
     hideOverlay()
     {
         this.overlayOpen = false;
@@ -85,10 +109,24 @@ export class ArticleComponent implements OnInit {
     {
         this.getArticles();
         this.getCategories();
+        this.getRoles();
+    }
+
+    toggleCombinedRoles(id)
+    {
+        const indexArray = this.combinedRoles.indexOf(id);
+        if (indexArray === -1)
+        {
+            this.combinedRoles.push(id);
+        }else
+        {
+            this.combinedRoles.pop(indexArray);
+        }
     }
 
     update(id)
     {
+        this.selectedArticle.roles = this.combinedRoles;
         this.apiService.update('article', this.selectedArticle, id).then(() => {
             this.getArticles();
             this.hideOverlay();

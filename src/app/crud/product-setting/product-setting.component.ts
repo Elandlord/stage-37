@@ -59,7 +59,6 @@ export class ProductSettingComponent implements OnInit {
 
     getProductNameBySettingId(id)
     {
-
         if(this.products !== undefined)
         {
             return this.products[id].name;

@@ -50,9 +50,11 @@
     <!-- Page Content -->
     <div id="page-content-wrapper">
         <div class="container-fluid">
-            <button (click)="menuOpen = !menuOpen" class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Menu</button>
+            <div class="row">
+                <button (click)="menuOpen = !menuOpen" class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Menu</button>
+                <ng-content></ng-content>
+            </div>
 
-            <ng-content></ng-content>
         </div>
     </div>
     <!-- /#page-content-wrapper -->
