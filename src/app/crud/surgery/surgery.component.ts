@@ -1,5 +1,7 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
 
+import * as _ from 'lodash';
+
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
 import { Surgery } from '../../models/surgery/surgery';
@@ -18,6 +20,8 @@ export class SurgeryComponent implements OnInit {
 
     model: any = {};
     surgeries: Surgery[];
+    referenceSurgeries: Surgery[];
+    searchSurgeries: Surgery[];
 
     selectedSurgery: any = {};
     overlaySelected = false;
@@ -61,6 +65,7 @@ export class SurgeryComponent implements OnInit {
         this.loading = true;
         this.apiService.get('surgeries').then((surgeries) => {
             this.surgeries = surgeries;
+            this.referenceSurgeries = surgeries;
             this.loading = false;
         });
     }
@@ -75,6 +80,16 @@ export class SurgeryComponent implements OnInit {
     {
         this.getSurgeries();
     }
+
+    setSearchParam(event: any)
+    {
+        this.searchSurgeries = _.filter(this.referenceSurgeries, (surgery) => {
+            return surgery.name.toLowerCase().match(event.target.value.toLowerCase());
+        });
+
+        this.surgeries = this.searchSurgeries;
+    }
+
 
     update(id)
     {

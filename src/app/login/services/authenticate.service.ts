@@ -10,7 +10,7 @@ import * as moment from 'moment';
 @Injectable()
 export class AuthenticateService {
 
-  private url = 'https://api.37company.rapide.software/v1/oauth/token';
+  private url = 'http://37company.eu.ngrok.io/v1/oauth/token';
 
   constructor(private http: Http) { }
 
@@ -20,8 +20,8 @@ export class AuthenticateService {
       headers.append('Accept', 'application/json');
 
       const body = new URLSearchParams();
-      body.append('client_id', '1');
-      body.append('client_secret', 'U0m8FAeXTFMeocsfPeJDvEaGh7BaUJiUF3C6htR6');
+      body.append('client_id', '2');
+      body.append('client_secret', '6vd7kRHlBs5ZOgiWBXwqoC5tx2dyfqSrE8EyyFjt');
       body.append('scope', '');
       body.append('grant_type', 'password');
       body.append('username', username);

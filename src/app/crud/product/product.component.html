@@ -50,7 +50,7 @@
         </div>
     </app-overlay>
 
-    <!--FORM COUNTRIES-->
+    <!--FORM SURGERIES-->
     <app-overlay *ngIf="overlaySurgery">
         <div class="container">
             <div class="col-lg-10 space-inside-sides-xl">
@@ -100,6 +100,7 @@
                 <div class="col-lg-12 space-inside-md">
                     <h3 class="space-inside-sm">Beschikbaarheid per land</h3>
                     <button (click)="selectAllCountries()" class="btn bg-main text-color-light">Selecteer alles</button>
+                    <button (click)="deselectAllCountries()" class="btn bg-tertiary text-color-light">Deselecteer alles</button>
                 </div>
                 <div class="space-inside-sm">
                     <form name="form" method="POST" (ngSubmit)="f.form.valid && updateCountries(selectedProduct.id)" #f="ngForm" novalidate>

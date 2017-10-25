@@ -39,7 +39,6 @@ export class ProductComponent implements OnInit {
   countries: Country[];
   selectedCountries: any = [];
   unselectedCountries: any = [];
-  allCountriesSelected = false;
 
   // Positions
   positions: Position[];
@@ -65,7 +64,7 @@ export class ProductComponent implements OnInit {
   // Surgeries
   surgeries: Surgery[];
   selectedSurgeries: any = [];
-  selectedPositionsPerSurgery: any = {};
+  selectedPositionsPerSurgery: any = [];
 
   constructor(private apiService: ApiService, public toastr: ToastsManager, vcr: ViewContainerRef) {
       this.toastr.setRootViewContainerRef(vcr);
@@ -78,40 +77,41 @@ export class ProductComponent implements OnInit {
 
   addPositionToSurgery(surgery_id, position_id)
   {
-    if (this.selectedPositionsPerSurgery[surgery_id] === undefined)
-    {
-        this.selectedPositionsPerSurgery[surgery_id] = {
-            positions: {}
-        };
-    }
-    this.selectedPositionsPerSurgery[surgery_id].positions[position_id] = new Position(position_id);
+      const surgery_position_index = _.findIndex(this.selectedPositionsPerSurgery,
+          {
+            'surgery_id': surgery_id,
+            'position_id': position_id
+          });
+
+      if (surgery_position_index === -1)
+      {
+          const surgery_position = {
+              'surgery_id': surgery_id,
+              'position_id': position_id,
+              'surface_area': 0
+          };
+
+          // if surgery + position combination doesn't exist, push to array
+          this.selectedPositionsPerSurgery.push(surgery_position);
+      }else
+      {
+        // if surgery + position combination already exist, pop from array
+        this.selectedPositionsPerSurgery.pop(surgery_position_index);
+      }
+
+      console.log(this.selectedPositionsPerSurgery);
   }
 
   addSurfaceToSurgeryPosition(surgery_id, position_id, event: any)
   {
-    this.selectedPositionsPerSurgery[surgery_id].positions[position_id].surface_area = event.target.value;
-  }
+      const surgery_position_index = _.findIndex(this.selectedPositionsPerSurgery,
+          {
+            'surgery_id': surgery_id,
+            'position_id': position_id
+          });
 
-  toggleCombinedProduct(id)
-  {
-    const indexArray = this.combinedProductsArray.indexOf(id);
-    if (indexArray === -1)
-    {
-        this.combinedProductsArray.push(id);
-    }else
-    {
-        this.combinedProductsArray.pop(indexArray);
-    }
-  }
-
-  toggleSurgery(id)
-  {
-    const indexArray = this.selectedSurgeries.indexOf(id);
-    if (indexArray === -1){
-        this.selectedSurgeries.push(id);
-    }else{
-        this.selectedSurgeries.pop(indexArray);
-    }
+      this.selectedPositionsPerSurgery[surgery_position_index].surface_area = parseFloat(event.target.value);
+      console.log(this.selectedPositionsPerSurgery);
   }
 
   checkProductCombined(id)
@@ -122,6 +122,12 @@ export class ProductComponent implements OnInit {
       return '';
     }
     return 'checked';
+  }
+
+  combineProduct()
+  {
+      this.model.combined_with = this.combinedProductsArray;
+      this.create();
   }
 
   create()
@@ -137,24 +143,35 @@ export class ProductComponent implements OnInit {
 
   createSurgeryPosition(product_id)
   {
-    this.selectedProduct.surgery_position = this.selectedPositionsPerSurgery;
-    console.log(this.selectedProduct);
-    this.apiService.post('product/' + product_id + '/surgeryposition', this.selectedProduct).then(() => {
+    const surgery_position = {
+      'surgery_position': this.selectedPositionsPerSurgery
+    };
+    this.apiService.post('product/' + product_id + '/surgeryposition', surgery_position).then(() => {
         this.getProducts();
         this.hideOverlay();
         this.toastr.success('Operaties en posities succesvol aangepast', 'Gelukt!');
     }).catch(() => {
         this.toastr.warning('Aanpassen mislukt. Controleer of de velden correct gevuld zijn..', 'Oeps!');
-    });;
+    });
   }
 
-  combineProduct()
+  createCountries(product_id)
   {
-    this.model.combined_with = this.combinedProductsArray;
-    this.create();
+    const saveCountries = {
+      'countries': this.selectedCountries
+    };
+
+    this.apiService.post('product/' + product_id + '/countries', saveCountries).then(() => {
+        this.getProducts();
+        this.hideOverlay();
+        this.toastr.success('Landen succesvol aangepast', 'Gelukt!');
+    }).catch(() => {
+        this.toastr.warning('Aanpassen mislukt. Controleer of de velden correct gevuld zijn..', 'Oeps!');
+    });
   }
 
-    destroy(id)
+
+  destroy(id)
   {
     this.apiService.delete('product', id).then(() => {
       this.getProducts();
@@ -173,8 +190,14 @@ export class ProductComponent implements OnInit {
 
   fillCountries()
   {
-    // to-do: fill selectedCountry array with data from API call. Currently not getting country data per product.
+
+    // fill unselectedCountries array with all countries
     _.forEach(this.countries, (country) => this.unselectedCountries.push(country.id));
+
+    // select countries from back-end call
+    _.forEach(this.selectedProduct.countries.data, (country) => {
+        this.selectCountry(country);
+    });
   }
 
   fillProductSettings()
@@ -182,6 +205,18 @@ export class ProductComponent implements OnInit {
     this.selectedProductSettings = _.filter(this.productSettings, (productsetting) => {
       return productsetting.product_id === this.selectedProduct.id;
     });
+  }
+
+  fillSurgeryPositions()
+  {
+    _.forEach(this.selectedProduct.position_product_surgery.data, (surgery) => {
+      if(this.selectedSurgeries.indexOf(surgery.surgery_id) === -1)
+      {
+        this.selectedSurgeries.push(surgery.surgery_id);
+      }
+    });
+
+    console.log(this.selectedSurgeries);
   }
 
   getCountries()
@@ -220,7 +255,7 @@ export class ProductComponent implements OnInit {
   getProducts()
   {
     this.loading = true;
-      this.apiService.get('products').then((products) => {
+      this.apiService.get('products?include=combined_products').then((products) => {
           this.products = products;
           this.referenceProducts = products;
           this.loading = false;
@@ -274,9 +309,11 @@ export class ProductComponent implements OnInit {
 
   loadProduct(id)
   {
-    this.apiService.get('product/' + id + '?include=countries').then( (product) => {
+    this.apiService.get('product/' + id + '?include=countries,settings,combined_products,position_product_surgery').then( (product) => {
         this.selectedProduct = product;
         this.fillProductSettings();
+        this.fillCountries();
+        this.fillSurgeryPositions();
     });
   }
 
@@ -313,7 +350,6 @@ export class ProductComponent implements OnInit {
     // Countries
     this.selectedCountries = [];
     this.unselectedCountries = [];
-    this.allCountriesSelected = false;
 
     // Surgeries
     this.selectedSurgeries = [];
@@ -330,8 +366,30 @@ export class ProductComponent implements OnInit {
 
   selectCountry(id)
   {
-    this.unselectedCountries.splice(this.unselectedCountries.indexOf(id), 1);
+    _.pull(this.unselectedCountries, id);
     this.selectedCountries.push(id);
+  }
+
+  toggleCombinedProduct(id)
+  {
+      const indexArray = this.combinedProductsArray.indexOf(id);
+      if (indexArray === -1)
+      {
+          this.combinedProductsArray.push(id);
+      }else
+      {
+          this.combinedProductsArray.pop(indexArray);
+      }
+  }
+
+  toggleSurgery(id)
+  {
+      const indexArray = this.selectedSurgeries.indexOf(id);
+      if (indexArray === -1){
+          this.selectedSurgeries.push(id);
+      }else{
+          this.selectedSurgeries.pop(indexArray);
+      }
   }
 
   toggleProductSetting(id)
@@ -346,14 +404,14 @@ export class ProductComponent implements OnInit {
 
   unselectCountry(id)
   {
-    this.selectedCountries.splice(this.selectedCountries.indexOf(id), 1);
+    _.pull(this.selectedCountries, id);
     this.unselectedCountries.push(id);
   }
 
   updateCountries(id)
   {
     this.selectedProduct.countries = this.selectedCountries;
-    this.update(id);
+    this.createCountries(id);
     this.reset();
   }
 
@@ -374,25 +432,22 @@ export class ProductComponent implements OnInit {
       this.createSurgeryPosition(id);
   }
 
-  selectAllCountries() {
-    this.allCountriesSelected = !this.allCountriesSelected;
+  selectAllCountries()
+  {
+      _.filter(this.countries, (country) => {
+        return this.selectedCountries.indexOf(country.id) === -1;
+      }).forEach((country) => {
+        this.selectCountry(country.id);
+      });
+  }
 
-    if (this.allCountriesSelected)
-    {
-        _.filter(this.countries, (country) => {
-          return this.selectedCountries.indexOf(country.id) === -1;
-        }).forEach((country) => {
-          this.selectCountry(country.id);
-        });
-    }else
-    {
-        _.filter(this.countries, (country) => {
-            return this.selectedCountries.indexOf(country.id) !== -1;
-        }).forEach((country) => {
-            this.unselectCountry(country.id);
-        });
-    }
-
+  deselectAllCountries()
+  {
+      _.filter(this.countries, (country) => {
+          return this.selectedCountries.indexOf(country.id) !== -1;
+      }).forEach((country) => {
+          this.unselectCountry(country.id);
+      });
   }
 
   surgeryInArray(id)
@@ -422,7 +477,6 @@ export class ProductComponent implements OnInit {
   {
     this.reset();
     this.loadProduct(id);
-    this.fillCountries();
     this.overlayCountry = true;
   }
 
@@ -430,7 +484,6 @@ export class ProductComponent implements OnInit {
   {
     this.reset();
     this.loadProduct(id);
-    this.fillProductSettings();
     this.overlaySettings = true;
   }
 }

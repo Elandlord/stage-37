@@ -16,11 +16,14 @@ import { ApiService } from '../../core/api.service';
 export class ProductSettingComponent implements OnInit {
 
     loading = false;
-    title = 'Productsettings';
+    title = 'Productinstellingen';
     overlayOpen = false;
 
     model: any = {};
     productSettings: ProductSetting[];
+    referenceProductSettings: ProductSetting[];
+    searchProductSettings: ProductSetting[];
+
     products: Product[];
 
     selectedProductSetting: any = {};
@@ -82,6 +85,7 @@ export class ProductSettingComponent implements OnInit {
         this.loading = true;
         this.apiService.get('productsettings').then((productsettings) => {
             this.productSettings = productsettings;
+            this.referenceProductSettings = productsettings;
             this.loading = false;
         });
     }
@@ -96,6 +100,15 @@ export class ProductSettingComponent implements OnInit {
     {
         this.getProducts();
         this.getProductSettings();
+    }
+
+    setSearchParam(event: any)
+    {
+        this.searchProductSettings = _.filter(this.referenceProductSettings, (productSetting) => {
+            return productSetting.name.toLowerCase().match(event.target.value.toLowerCase());
+        });
+
+        this.productSettings = this.searchProductSettings;
     }
 
     update(id)

@@ -37,7 +37,7 @@ export class ApiService {
     }
 
     getUrl() {
-        return 'https://api.37company.rapide.software';
+        return 'http://37company.eu.ngrok.io';
     }
 
     getVersion() {
