@@ -5,6 +5,8 @@ import { URLSearchParams } from '@angular/http';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 
+import * as moment from 'moment';
+
 @Injectable()
 export class AuthenticateService {
 
@@ -31,6 +33,7 @@ export class AuthenticateService {
             let user = res.json();
             if (user && user.access_token){
                 localStorage.setItem('currentUser', JSON.stringify(user));
+                localStorage.setItem('valid_until', JSON.stringify(moment().add(user.expires_in, 'm')));
             }
           })
           .catch(this.handleError);
@@ -38,6 +41,7 @@ export class AuthenticateService {
 
   logout(){
       localStorage.removeItem('currentUser');
+      localStorage.removeItem('valid_until');
   }
 
   private handleError(error: any): Promise<any> {
