@@ -37,7 +37,7 @@ export class AuthenticateService {
   }
 
   logout(){
-      localStorage.removeItem('currentUser')
+      localStorage.removeItem('currentUser');
   }
 
   private handleError(error: any): Promise<any> {

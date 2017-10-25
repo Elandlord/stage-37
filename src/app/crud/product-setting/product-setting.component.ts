@@ -1,5 +1,7 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
 
+import * as _ from 'lodash';
+
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
 import { Product } from '../../models/product/product';
@@ -61,7 +63,7 @@ export class ProductSettingComponent implements OnInit {
     {
         if(this.products !== undefined)
         {
-            return this.products[id].name;
+            return _.find(this.products, (product) => product.id === id);
         }
 
         return 'Geen';

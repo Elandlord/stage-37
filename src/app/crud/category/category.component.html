@@ -29,14 +29,14 @@
               <div *ngIf="f.submitted && !name.valid" class="help-block">Naam is verplicht</div>
             </div>
             <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !description.valid }">
-              <label for="description">description</label>
+              <label for="description">Beschrijving</label>
               <textarea class="form-control" id="description" name="description" [(ngModel)]="selectedCategory.description" #description="ngModel" required></textarea>
-              <div *ngIf="f.submitted && !description.valid" class="help-block">description is verplicht</div>
+              <div *ngIf="f.submitted && !description.valid" class="help-block">Beschrijving is verplicht</div>
             </div>
             <div class="form-group"  [ngClass]="{ 'has-error': f.submitted && !parent_id.valid }">
               <label for="parent_id">Categorie</label>
               <select id="parent_id" class="form-control" name="parent_id" [(ngModel)]="selectedCategory.parent_id" #parent_id="ngModel" required>
-                <option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</option>
+                <option *ngFor="let category of categories" [value]="category.id">{{ category.id }}</option>
               </select>
               <div *ngIf="f.submitted && !parent_id.valid" class="help-block">Categorie is verplicht</div>
             </div>
@@ -64,14 +64,14 @@
               <div *ngIf="f.submitted && !name.valid" class="help-block">Naam is verplicht</div>
             </div>
             <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !description.valid }">
-              <label for="description">description</label>
+              <label for="description">Beschrijving</label>
               <textarea class="form-control" id="description" name="description" [(ngModel)]="model.description" #description="ngModel" required></textarea>
               <div *ngIf="f.submitted && !description.valid" class="help-block">Beschrijving is verplicht</div>
             </div>
             <div class="form-group"  [ngClass]="{ 'has-error': f.submitted && !parent_id.valid }">
               <label for="parent_id">Categorie</label>
               <select class="form-control" id="parent_id" name="parent_id" [(ngModel)]="model.parent_id" #parent_id="ngModel">
-                <option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</option>
+                <option *ngFor="let category of categories" [value]="category.id">{{ category.id }}</option>
               </select>
               <div *ngIf="f.submitted && !parent_id.valid" class="help-block">Parent is verplicht</div>
             </div>

@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from '../login/login.component';
 import { DashboardComponent } from '../dashboard/dashboard.component';
 
-import { AdviceComponent } from "../crud/advice/advice.component";
+import { AdviceComponent } from '../crud/advice/advice.component';
 import { ArticleComponent } from '../crud/article/article.component';
 import { CategoryComponent } from '../crud/category/category.component';
 import { CountryComponent } from '../crud/country/country.component';

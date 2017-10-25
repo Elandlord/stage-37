@@ -37,6 +37,8 @@ export class RoleComponent implements OnInit {
             this.getRoles();
             this.overlayOpen = false;
             this.toastr.success('Rol succesvol toegevoegd.', 'Gelukt!');
+        }).catch(() => {
+            this.toastr.warning('Gegevens onjuist. De naam van de rol bestaat al.', 'Oeps!');
         });
     }
 

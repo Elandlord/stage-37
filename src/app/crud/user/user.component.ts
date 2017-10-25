@@ -1,5 +1,7 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
 
+import * as _ from 'lodash';
+
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
 import { Country } from '../../models/country/country';
@@ -70,15 +72,9 @@ export class UserComponent implements OnInit {
 
     getFunctionById(id)
     {
-        if(this.roles !== undefined)
+        if(this.roles !== undefined && id !== null)
         {
-            for (let role of this.roles)
-            {
-                if (role.id === id)
-                {
-                    return role.name;
-                }
-            }
+            return _.find(this.roles, (role) => role.id === id);
         }
         return 'Geen';
     }

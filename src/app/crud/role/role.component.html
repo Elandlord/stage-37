@@ -30,9 +30,9 @@
               <div *ngIf="f.submitted && !name.valid" class="help-block">Naam is verplicht</div>
             </div>
             <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !description.valid }">
-              <label for="description">description</label>
+              <label for="description">Beschrijving</label>
               <textarea class="form-control" id="description" name="description" [(ngModel)]="selectedRole.description" #description="ngModel" required></textarea>
-              <div *ngIf="f.submitted && !description.valid" class="help-block">description is verplicht</div>
+              <div *ngIf="f.submitted && !description.valid" class="help-block">Beschrijving is verplicht</div>
             </div>
             <div class="form-group"  [ngClass]="{ 'has-error': f.submitted && !display_name.valid }">
               <label for="display_name">Naam weergave</label>
@@ -63,7 +63,7 @@
               <div *ngIf="f.submitted && !name.valid" class="help-block">Naam is verplicht</div>
             </div>
             <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !description.valid }">
-              <label for="description">description</label>
+              <label for="description">Beschrijving</label>
               <textarea class="form-control" id="description" name="description" [(ngModel)]="model.description" #description="ngModel" required></textarea>
               <div *ngIf="f.submitted && !description.valid" class="help-block">Beschrijving is verplicht</div>
             </div>

@@ -130,6 +130,8 @@ export class ProductComponent implements OnInit {
           this.getProducts();
           this.hideOverlay();
           this.toastr.success('Product succesvol toegevoegd.', 'Gelukt!');
+      }).catch(() => {
+          this.toastr.warning('Toevoegen mislukt. Controleer of de velden correct gevuld zijn..', 'Oeps!');
       });
   }
 
@@ -141,7 +143,9 @@ export class ProductComponent implements OnInit {
         this.getProducts();
         this.hideOverlay();
         this.toastr.success('Operaties en posities succesvol aangepast', 'Gelukt!');
-    });
+    }).catch(() => {
+        this.toastr.warning('Aanpassen mislukt. Controleer of de velden correct gevuld zijn..', 'Oeps!');
+    });;
   }
 
   combineProduct()
@@ -291,6 +295,8 @@ export class ProductComponent implements OnInit {
       this.getProducts();
       this.hideOverlay();
       this.toastr.success('Product succesvol aangepast.', 'Gelukt!');
+    }).catch(() => {
+        this.toastr.warning('Aanpassen mislukt. Controleer of de velden correct gevuld zijn..', 'Oeps!');
     });
   }
 
