@@ -25,7 +25,9 @@
         "../node_modules/ng2-toastr/bundles/ng2-toastr.min.css"
       ],
       "scripts": [
-        "../node_modules/lodash/lodash.js"
+        "../node_modules/lodash/lodash.js",
+        "../node_modules/jquery/dist/jquery.js",
+        "../node_modules/bootstrap/dist/js/bootstrap.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {

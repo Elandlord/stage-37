@@ -5,9 +5,9 @@ import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 import * as _ from 'lodash';
 
 import { Advice } from '../../models/advice/advice';
-import { Surgery } from "../../models/surgery/surgery";
-import { Position } from "../../models/position/position";
-import { Product} from "../../models/product/product";
+import { Surgery } from '../../models/surgery/surgery';
+import { Position } from '../../models/position/position';
+import { Product} from '../../models/product/product';
 import { ApiService } from '../../core/api.service';
 
 @Component({
@@ -18,12 +18,15 @@ import { ApiService } from '../../core/api.service';
 export class AdviceComponent implements OnInit {
 
     loading = false;
+    loadingAdvice = false;
+
     title = 'Adviezen';
     overlayOpen = false;
 
     model: any = {};
     // Advices is not the correct plural form of Advice
     advices: Advice[];
+    adviceProduct: any = [];
     positions: Position[];
     products: Product[];
 
@@ -33,11 +36,12 @@ export class AdviceComponent implements OnInit {
     selectedAdvice: any = {};
     overlaySelected = false;
     overlayProducts = false;
+    overlaySurgery = false;
 
     // Surgeries
     surgeries: Surgery[];
     selectedSurgeries: any = [];
-    selectedPositionsPerSurgery: any = {};
+    selectedPositionsPerSurgery: any = [];
 
     constructor(private apiService: ApiService, public toastr: ToastsManager, vcr: ViewContainerRef) {
         this.toastr.setRootViewContainerRef(vcr);
@@ -48,18 +52,88 @@ export class AdviceComponent implements OnInit {
         this.overlayOpen = true;
     }
 
-    addSurgery(id)
+    addPositionToSurgery(surgery_id, position_id)
     {
-        const indexArray = this.selectedSurgeries.indexOf(id);
-        if (indexArray === -1){
-            this.selectedSurgeries.push(id);
-        }else{
-            this.selectedSurgeries.pop(indexArray);
+        const surgery_position_index = _.findIndex(this.selectedPositionsPerSurgery,
+            {
+                'surgery_id': surgery_id,
+                'position_id': position_id
+            });
+
+        if (surgery_position_index === -1)
+        {
+            const surgery = _.findIndex(this.selectedPositionsPerSurgery, {
+                'surgery_id': surgery_id
+            });
+
+            const surgery_position = {
+                'surgery_id': surgery_id,
+                'position_id': position_id,
+                'surface_area': 0
+            };
+
+            if ( Object.keys(this.selectedPositionsPerSurgery[surgery]).length === 1) {
+                // if surgery_id is added, but doesn't contain a position yet
+                this.selectedPositionsPerSurgery[surgery] = surgery_position;
+            }else {
+                // if surgery + position combination doesn't exist, push to array
+                this.selectedPositionsPerSurgery.push(surgery_position);
+            }
+        }else {
+            // if surgery + position combination already exist, pop from array
+            this.selectedPositionsPerSurgery.splice(surgery_position_index, 1);
+        }
+    }
+
+    addSurfaceToSurgeryPositionEvent(surgery_id, position_id, surface_area)
+    {
+        const surgery_position_index = _.findIndex(this.selectedPositionsPerSurgery,
+            {
+                'surgery_id': surgery_id,
+                'position_id': position_id
+            });
+
+        this.selectedPositionsPerSurgery[surgery_position_index].surface_area = parseFloat(surface_area);
+    }
+
+    addSurfaceToSurgeryPosition(surgery_id, position_id, event: any)
+    {
+        const surgery_position_index = _.findIndex(this.selectedPositionsPerSurgery,
+            {
+                'surgery_id': surgery_id,
+                'position_id': position_id
+            });
+
+        this.selectedPositionsPerSurgery[surgery_position_index].surface_area = parseFloat(event.target.value);
+    }
+
+    checkboxPositionInSurgery(surgery_id, position_id)
+    {
+        const surgery_position_index = _.findIndex(this.selectedPositionsPerSurgery,
+            {
+                'surgery_id': surgery_id,
+                'position_id': position_id
+            });
+
+        if (surgery_position_index !== -1)
+        {
+            return 'checked';
+        }
+    }
+
+    checkAdviceProduct(product_id)
+    {
+        const index = this.adviceProduct.indexOf(product_id);
+
+        if (index !== -1){
+            return 'checked';
         }
     }
 
     create()
     {
+        this.model.product_id = this.adviceProduct;
+
         this.apiService.post('advices', this.model).then(() => {
             this.getAdvices();
             this.overlayOpen = false;
@@ -77,13 +151,6 @@ export class AdviceComponent implements OnInit {
 
     fillProducts()
     {
-        // unselect all products
-        _.forEach(this.products, (product) => this.unselectedProducts.push(product.id));
-
-        // select products per advice
-        _.forEach(this.advices, (advice) => {
-            _.forEach(advice.product_id, (product) => this.selectProduct(product));
-        });
 
     }
 
@@ -141,12 +208,15 @@ export class AdviceComponent implements OnInit {
         this.overlayOpen = false;
         this.overlaySelected = false;
         this.overlayProducts = false;
+        this.overlaySurgery = false;
     }
 
     loadAdvice(id)
     {
+        this.loadingAdvice = true;
         this.apiService.get('advice/' + id).then((advice) => {
             this.selectedAdvice = advice;
+            this.loadingAdvice = false;
         });
     }
 
@@ -156,6 +226,19 @@ export class AdviceComponent implements OnInit {
         this.getPositions();
         this.getSurgeries();
         this.getProducts();
+    }
+
+    positionInSurgery(surgery_id, position_id)
+    {
+        const surgery_position_index = _.findIndex(this.selectedPositionsPerSurgery,
+            {
+                'surgery_id': surgery_id,
+                'position_id': position_id
+            });
+
+        if (surgery_position_index !== -1){
+            return this.selectedPositionsPerSurgery[surgery_position_index].surface_area;
+        }
     }
 
     reset()
@@ -173,11 +256,49 @@ export class AdviceComponent implements OnInit {
 
     surgeryInArray(id)
     {
-        if (this.selectedSurgeries.indexOf(id) === -1)
-        {
-            return false;
+        const index = _.findIndex(this.selectedPositionsPerSurgery, {
+            'surgery_id': id,
+        });
+
+        if (index !== -1){
+            return true;
         }
-        return true;
+        return false;
+
+    }
+
+    toggleAdviceProduct(product_id){
+        const index = this.adviceProduct.indexOf(product_id);
+
+        if (index !== -1)
+        {
+            this.adviceProduct.splice(index, 1);
+        }else{
+            this.adviceProduct.push(product_id);
+        }
+    }
+
+    toggleSurgery(surgery_id)
+    {
+        if (this.surgeryInArray(surgery_id))
+        {
+            const index = _.filter(this.selectedPositionsPerSurgery, {
+                'surgery_id': surgery_id,
+            });
+
+            _.forEach(index, (surgery) => {
+                const surgery_position_index = _.findIndex(this.selectedPositionsPerSurgery, {
+                    'surgery_id': surgery.surgery_id,
+                    'position_id': surgery.position_id
+                });
+
+                this.selectedPositionsPerSurgery.splice(surgery_position_index, 1);
+            });
+
+        }else{
+            const surgery = {'surgery_id': surgery_id};
+            this.selectedPositionsPerSurgery.push(surgery);
+        }
     }
 
     unselectProduct(id)
@@ -197,7 +318,7 @@ export class AdviceComponent implements OnInit {
 
     updateProducts(id)
     {
-        this.selectedAdvice.product_id = this.selectedProducts;
+        this.selectedAdvice.product_id = this.adviceProduct;
         this.update(id);
         this.reset();
     }
@@ -207,12 +328,18 @@ export class AdviceComponent implements OnInit {
         this.getAdvice(id);
     }
 
-    viewProducts(id)
+    viewProduct(id)
     {
         this.reset();
-        this.fillProducts();
         this.loadAdvice(id);
         this.overlayProducts = true;
+    }
+
+    viewSurgery(id)
+    {
+        this.reset();
+        this.loadAdvice(id);
+        this.overlaySurgery = true;
     }
 
 }

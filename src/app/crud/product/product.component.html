@@ -24,26 +24,70 @@
         </div>
     </div>
 
-    <!--FORM PRODUCTSETTINGS-->
-    <app-overlay *ngIf="overlaySettings">
-        <div class="container">
+    <!--FORM COMBINED PRODUCTS-->
+    <app-overlay *ngIf="overlayCombinedProducts">
+        <div class="col-lg-12 text-center space-inside-xl" *ngIf="loadingProduct">
+            <img src="../../../assets/img/svg-loaders/three-dots.svg" />
+        </div>
+        <div class="container animated fadeIn" *ngIf="!loadingProduct">
             <div class="col-lg-10 space-inside-sides-xl">
                 <span (click)="hideOverlay()" class="right pointer font-lg text-hover-main transition-normal"><i class="material-icons">close</i></span>
                 <div class="col-lg-12 space-inside-md">
                     <h4 class="text-thin ">Product: <span class="text-bold">{{ selectedProduct.name }}</span></h4>
                     <p class="text-color-accent space-inside-down-sm">Selecteer de juiste instellingen.</p>
 
+                    <form name="form" method="POST" (ngSubmit)="f.form.valid && updateCombinedProducts(selectedProduct.id)" #f="ngForm" novalidate>
+                        <div class="form-group">
+                        <div class="col-lg-12 reset-padding">
+                            <label>Combineer met product</label>
+                        </div>
+                        <div class="col-lg-4" *ngFor="let product of products; let i = index">
+                            <input class="space-inside-sides-xs" type="checkbox" [id]="product.id" (change)="toggleCombinedProduct(product.id)" [checked]="checkProductCombined(product.id)"><label [for]="product.id" class="text-light pointer space-inside-left-xs">{{ product.name }}</label>  <br/>
+                        </div>
+                    </div>
+                        <div class="form-group">
+                            <div class="col-lg-12 space-inside-md reset-padding">
+                                <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </app-overlay>
+
+    <!--FORM PRODUCTSETTINGS-->
+    <app-overlay *ngIf="overlaySettings">
+        <div class="col-lg-12 text-center space-inside-xl" *ngIf="loadingProduct">
+            <img src="../../../assets/img/svg-loaders/three-dots.svg" />
+        </div>
+        <div class="container animated fadeIn" *ngIf="!loadingProduct">
+            <div class="col-lg-10 space-inside-sides-xl">
+                <span (click)="hideOverlay()" class="right pointer font-lg text-hover-main transition-normal"><i class="material-icons">close</i></span>
+                <div class="col-lg-12 space-inside-md">
+                    <h4 class="text-thin ">Product: <span class="text-bold">{{ selectedProduct.name }}</span></h4>
+                    <p class="text-color-accent space-inside-down-sm">Huidige instellingen.</p>
+
                     <form name="form" method="POST" (ngSubmit)="f.form.valid && updateProductSettings(selectedProduct.id)" #f="ngForm" novalidate>
                         <div *ngIf="selectedProductSettings.length === 0">
                             Er zijn geen settings gekoppeld aan dit product. Het koppelen kan gedaan worden onder "Productinstellingen".
                         </div>
-                        <div class="col-lg-4" *ngFor="let productsetting of selectedProductSettings; let i = index">
-                            <input class="space-inside-sides-xs" type="checkbox" [id]="productsetting.id" (change)="toggleProductSetting(productsetting.id)"><label [for]="productsetting.id" class="text-light pointer space-inside-left-xs">{{ productsetting.name }}</label>  <br/>
-                        </div>
-                        <div class="form-group col-lg-12 space-inside-md" *ngIf="selectedProductSettings.length > 0">
-
-                            <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
-                        </div>
+                        <table *ngIf="selectedProductSettings.length > 0" class="table table-striped table-hover table-responsive animated fadeIn shadow-xs">
+                            <thead class="thead-inverse">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Naam</th>
+                                    <th>Inputtype</th>
+                                    <th>Waardes</th>
+                                </tr>
+                            </thead>
+                            <tr *ngFor="let productsetting of productSettings; let i = index">
+                                <td>{{ productsetting.id }}</td>
+                                <td>{{ productsetting.name }}</td>
+                                <td>{{ productsetting.input_type }}</td>
+                                <td>{{ productsetting.values }}</td>
+                            </tr>
+                        </table>
                     </form>
                 </div>
             </div>
@@ -52,7 +96,10 @@
 
     <!--FORM SURGERIES-->
     <app-overlay *ngIf="overlaySurgery">
-        <div class="container">
+        <div class="col-lg-12 text-center space-inside-xl" *ngIf="loadingProduct">
+            <img src="../../../assets/img/svg-loaders/three-dots.svg" />
+        </div>
+        <div class="container animated fadeIn" *ngIf="!loadingProduct">
             <div class="col-lg-10 space-inside-sides-xl">
                 <span (click)="hideOverlay()" class="right pointer font-lg text-hover-main transition-normal"><i class="material-icons">close</i></span>
                 <div class="col-lg-12 space-inside-md">
@@ -63,7 +110,7 @@
                         <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal space-inside-down-sm">Opslaan</button>
                         <div class="space-inside-xs" *ngFor="let surgery of surgeries; let i = index">
 
-                            <input type="checkbox" [id]="surgery.name" (change)="toggleSurgery(surgery.id)" class="inline-block space-inside-right-md">
+                            <input type="checkbox" [id]="surgery.name" (change)="toggleSurgery(surgery.id)" class="inline-block space-inside-right-md" [checked]="surgeryInArray(surgery.id)">
                             <label [for]="surgery.name" class="inline-block pointer"><h5 class="text-thin">Operatie: <span class="text-bold">{{ surgery.name }}</span></h5></label>
 
                             <div *ngIf="surgeryInArray(surgery.id)" class="animated fadeIn">
@@ -77,9 +124,9 @@
                                     </thead>
                                     <tr *ngFor="let position of positions; let i = index">
 
-                                            <td class="td-max-input"><input [id]="surgery.id + position.name" (change)="addPositionToSurgery(surgery.id, position.id)" type="checkbox" /></td>
+                                            <td class="td-max-input"><input [id]="surgery.id + position.name" (change)="addPositionToSurgery(surgery.id, position.id)" [checked]="checkboxPositionInSurgery(surgery.id, position.id)" type="checkbox" /></td>
                                             <td class="td-max-input"><label class="pointer text-thin" [for]="surgery.id + position.name">{{ position.name }}</label></td>
-                                            <td class="td-max-input"><input [name]="position.name" (keyup)="addSurfaceToSurgeryPosition(surgery.id, position.id, $event)" class="form-control" type="number" step="0.01" placeholder="Surface" /></td>
+                                            <td class="td-max-input"><input [name]="position.name" (keyup)="addSurfaceToSurgeryPosition(surgery.id, position.id, $event)" [value]="positionInSurgery(surgery.id, position.id)" class="form-control" type="number" step="0.01" placeholder="Surface" /></td>
                                     </tr>
                                 </table>
                             </div>
@@ -94,7 +141,10 @@
 
     <!--FORM COUNTRIES-->
     <app-overlay *ngIf="overlayCountry">
-        <div class="container">
+        <div class="col-lg-12 text-center space-inside-xl" *ngIf="loadingProduct">
+            <img src="../../../assets/img/svg-loaders/three-dots.svg" />
+        </div>
+        <div class="container animated fadeIn" *ngIf="!loadingProduct">
             <div class="col-lg-10 space-inside-sides-xl">
                 <span (click)="hideOverlay()" class="right pointer font-lg text-hover-main transition-normal"><i class="material-icons">close</i></span>
                 <div class="col-lg-12 space-inside-md">
@@ -215,14 +265,6 @@
                             <div *ngIf="f.submitted && !heat_type.valid" class="help-block">Type hitte is verplicht</div>
                         </div>
                         <div class="form-group">
-                            <div class="col-lg-12 reset-padding">
-                                <label>Combineer met product</label>
-                            </div>
-                            <div class="col-lg-4" *ngFor="let product of products; let i = index">
-                                <input class="space-inside-sides-xs" type="checkbox" [id]="product.id" (change)="toggleCombinedProduct(product.id)" [checked]="checkProductCombined(product.id)"><label [for]="product.id" class="text-light pointer space-inside-left-xs">{{ product.name }}</label>  <br/>
-                            </div>
-                        </div>
-                        <div class="form-group">
                             <div class="col-lg-12 space-inside-md reset-padding">
                                 <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
                             </div>
@@ -242,7 +284,7 @@
                 <h4 class="text-thin ">Product <span class="text-bold">toevoegen</span></h4>
                 <p class="text-color-accent space-inside-down-sm">Voer de juiste gegevens in.</p>
                 <div class="space-inside-sm">
-                    <form name="form" method="POST" (ngSubmit)="f.form.valid && combineProduct()" #f="ngForm" novalidate>
+                    <form name="form" method="POST" (ngSubmit)="f.form.valid && create()" #f="ngForm" novalidate>
                         <div class="form-group" [ngClass]="{ 'has-error': f.submitted && !name.valid }">
                             <label for="name">Naam</label>
                             <input class="form-control" type="text" id="name" name="name" [(ngModel)]="model.name" #name="ngModel" required/>
@@ -313,14 +355,6 @@
                             <div *ngIf="f.submitted && !heat_type.valid" class="help-block">Type hitte is verplicht</div>
                         </div>
                         <div class="form-group">
-                            <div class="col-lg-12 reset-padding">
-                                <label>Combineer met product</label>
-                            </div>
-                            <div class="col-lg-4" *ngFor="let product of products; let i = index">
-                                <input class="space-inside-sides-xs" type="checkbox" [id]="product.id" (change)="toggleCombinedProduct(product.id)"><label [for]="product.id" class="text-light pointer space-inside-left-xs">{{ product.name }}</label>  <br/>
-                            </div>
-                        </div>
-                        <div class="form-group">
                             <div class="col-lg-12 space-inside-md reset-padding">
                                 <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>
                             </div>
@@ -339,9 +373,7 @@
               <th>Code</th>
               <th>Beschrijving</th>
               <th>Productlijn</th>
-              <th>Productinstellingen</th>
-              <th>Operaties</th>
-              <th>Beschikbaarheid per land</th>
+              <th>Beheer</th>
               <th>Aanpassen / Bekijken</th>
               <th>Verwijderen</th>
           </tr>
@@ -362,14 +394,17 @@
           <td>
               {{ getProductLineNameById(product.product_line_id) }}
           </td>
-          <td>
-              <button (click)="viewProductSettings(product.id)" type="button" class="btn btn-info transition-normal text-color-light">Productinstellingen</button>
-          </td>
-          <td>
-              <button (click)="viewSurgery(product.id)" type="button" class="btn btn-success transition-normal text-color-light">Operaties</button>
-          </td>
-          <td>
-            <button (click)="viewCountries(product.id)" type="button" class="btn bg-main bg-main-hover-darken-xs transition-normal text-color-light">Landen</button>
+          <td class="z-very-high">
+              <div class="dropdown">
+                  <button class="btn bg-tertiary-lighten-xs text-color-light dropdown-toggle" type="button" data-toggle="dropdown">Beheer product
+                      <span class="caret"></span></button>
+                  <ul class="dropdown-menu">
+                      <li class="space-inside-sides-md bg-hover-accent text-hover-light transition-normal" (click)="viewCombinedProducts(product.id)">Combineer producten</li>
+                      <li class="space-inside-sides-md bg-hover-accent text-hover-light transition-normal" (click)="viewProductSettings(product.id)">Bekijk productinstellingen</li>
+                      <li class="space-inside-sides-md bg-hover-accent text-hover-light transition-normal" (click)="viewSurgery(product.id)" >Operaties en posities</li>
+                      <li class="space-inside-sides-md bg-hover-accent text-hover-light transition-normal" (click)="viewCountries(product.id)" >Landen</li>
+                  </ul>
+              </div>
           </td>
           <td>
               <button (click)="viewDetails(product.id)" type="button" class="btn btn-primary transition-normal"><i class="material-icons">assignment</i></button>
