@@ -4,6 +4,7 @@ import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
 import { ProductLine } from '../../models/product-line/product-line';
 import {ApiService} from '../../core/api.service';
+import {LanguageService} from '../../services/language.service';
 
 @Component({
   selector: 'app-product-line',
@@ -22,7 +23,7 @@ export class ProductLineComponent implements OnInit {
     selectedProductLine: any = {};
     overlaySelected = false;
 
-    constructor(private apiService: ApiService, public toastr: ToastsManager, vcr: ViewContainerRef) {
+    constructor(private apiService: ApiService, public toastr: ToastsManager, private languageService: LanguageService, vcr: ViewContainerRef) {
         this.toastr.setRootViewContainerRef(vcr);
     }
 
@@ -71,9 +72,18 @@ export class ProductLineComponent implements OnInit {
         this.overlaySelected = false;
     }
 
+    init(){
+        this.getProductLines();
+    }
+
     ngOnInit()
     {
-        this.getProductLines();
+        this.init();
+        this.languageService.languageChanged.subscribe( value => {
+            if (value === true) {
+                this.init();
+            }
+        });
     }
 
     update(id)

@@ -21,9 +21,22 @@ export class ApiService {
     headers() {
         const JSONuser = JSON.parse(localStorage.getItem('currentUser'));
         const token = 'Bearer ' + JSONuser.access_token;
+        let lang = 'en';
+
+        if( localStorage.getItem('lang') !== null)
+        {
+            lang = localStorage.getItem('lang');
+        }else{
+            localStorage.setItem('lang', JSON.stringify(lang));
+        }
+
+        // remove quotes from string
+        lang = lang.replace(/['"]+/g, '');
+
         const headers = new Headers({
             'Accept': 'application/json',
-            'Authorization': token
+            'Authorization': token,
+            'Content-Language': lang
         });
         return headers;
     }

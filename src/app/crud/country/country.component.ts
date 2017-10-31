@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { Country } from '../../models/country/country';
 import {ApiService} from '../../core/api.service';
+import {LanguageService} from '../../services/language.service';
 
 @Component({
   selector: 'app-country',
@@ -15,7 +16,7 @@ export class CountryComponent implements OnInit {
     title = 'Landen';
     countries: Country[];
 
-    constructor(private apiService: ApiService) { }
+    constructor(private apiService: ApiService, private languageService: LanguageService) { }
 
     getCountries()
     {
@@ -26,9 +27,19 @@ export class CountryComponent implements OnInit {
         });
     }
 
+    init()
+    {
+        this.getCountries();
+    }
+
   ngOnInit()
   {
-    this.getCountries();
+      this.init();
+      this.languageService.languageChanged.subscribe( value => {
+          if (value === true) {
+              this.init();
+          }
+      });
   }
 
 }

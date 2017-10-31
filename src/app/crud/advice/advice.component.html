@@ -40,14 +40,12 @@
                   <tr>
                     <th>Check</th>
                     <th>Posities</th>
-                    <th>Surface Area</th>
                   </tr>
                   </thead>
                   <tr *ngFor="let position of positions; let i = index">
 
                     <td class="td-max-input"><input [id]="surgery.id + position.name" (change)="addPositionToSurgery(surgery.id, position.id)" [checked]="checkboxPositionInSurgery(surgery.id, position.id)" type="checkbox" /></td>
                     <td class="td-max-input"><label class="pointer text-thin" [for]="surgery.id + position.name">{{ position.name }}</label></td>
-                    <td class="td-max-input"><input [name]="position.name" (keyup)="addSurfaceToSurgeryPosition(surgery.id, position.id, $event)" [value]="positionInSurgery(surgery.id, position.id)" class="form-control" type="number" step="0.01" placeholder="Surface" /></td>
                   </tr>
                 </table>
               </div>
@@ -138,6 +136,7 @@
             </div>
             <div class="form-group">
               <div class="col-lg-4" *ngFor="let product of products; let i = index">
+                <label >Combineer product</label>
                 <input class="space-inside-sides-xs" type="checkbox" [id]="product.id" (change)="toggleAdviceProduct(product.id)" [checked]="checkAdviceProduct(product.id)"><label [for]="product.id" class="text-light pointer space-inside-left-xs">{{ product.name }}</label>  <br/>
               </div>
             </div>

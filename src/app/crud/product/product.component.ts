@@ -13,6 +13,7 @@ import {Surgery } from '../../models/surgery/surgery';
 import { ProductLine } from '../../models/product-line/product-line';
 import { ProductSetting } from '../../models/product-setting/product-setting';
 import {ApiService} from '../../core/api.service';
+import {LanguageService} from '../../services/language.service';
 
 @Component({
   selector: 'app-product',
@@ -70,7 +71,7 @@ export class ProductComponent implements OnInit {
   selectedSurgeries: any = [];
   selectedPositionsPerSurgery: any = [];
 
-  constructor(private apiService: ApiService, public toastr: ToastsManager, vcr: ViewContainerRef) {
+  constructor(private apiService: ApiService, public toastr: ToastsManager, private languageService: LanguageService, vcr: ViewContainerRef) {
       this.toastr.setRootViewContainerRef(vcr);
   }
 
@@ -383,6 +384,16 @@ export class ProductComponent implements OnInit {
     this.overlayCombinedProducts = false;
   }
 
+  init()
+  {
+      this.getProducts();
+      this.getProductLines();
+      this.getCountries();
+      this.getPositions();
+      this.getSurgeries();
+      this.getProductSettings();
+  }
+
   loadProduct(id)
   {
     this.loadingProduct = true;
@@ -397,12 +408,12 @@ export class ProductComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getProducts();
-    this.getProductLines();
-    this.getCountries();
-    this.getPositions();
-    this.getSurgeries();
-    this.getProductSettings();
+      this.init();
+      this.languageService.languageChanged.subscribe( value => {
+          if (value === true) {
+              this.init();
+          }
+      });
   }
 
   positionInSurgery(surgery_id, position_id)
@@ -498,6 +509,16 @@ export class ProductComponent implements OnInit {
       }
   }
 
+  toggleProductSetting(id)
+  {
+      const indexArray = this.selectedProductSettings.indexOf(id);
+      if (indexArray === -1){
+          this.toggledProductSettings.push(id);
+      }else{
+          this.toggledProductSettings.splice(indexArray, 1);
+      }
+  }
+
   unselectCountry(id)
   {
     _.pull(this.selectedCountries, id);
@@ -568,7 +589,6 @@ export class ProductComponent implements OnInit {
   viewDetails(id)
   {
     this.reset();
-    this.fillCombinedProducts();
     this.getProduct(id);
   }
 

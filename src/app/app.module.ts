@@ -18,6 +18,7 @@ import {AuthGuard} from './guards/auth.guard';
 import { AuthenticateService } from './login/services/authenticate.service';
 import { ApiService } from './core/api.service';
 import { AlertService} from './services/alert.service';
+import { LanguageService} from './services/language.service';
 import { ReadComponent } from './core/components/read/read.component';
 import { CountryComponent } from './crud/country/country.component';
 import { OverlayComponent } from './core/components/overlay/overlay.component';
@@ -65,7 +66,7 @@ import { AdviceComponent } from './crud/advice/advice.component';
     BrowserAnimationsModule,
     ToastModule.forRoot()
   ],
-  providers: [ AuthGuard, AuthenticateService, AlertService, ApiService ],
+  providers: [ AuthGuard, AuthenticateService, AlertService, ApiService, LanguageService ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

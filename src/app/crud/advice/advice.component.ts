@@ -9,6 +9,7 @@ import { Surgery } from '../../models/surgery/surgery';
 import { Position } from '../../models/position/position';
 import { Product} from '../../models/product/product';
 import { ApiService } from '../../core/api.service';
+import {LanguageService} from '../../services/language.service';
 
 @Component({
   selector: 'app-advice',
@@ -43,7 +44,7 @@ export class AdviceComponent implements OnInit {
     selectedSurgeries: any = [];
     selectedPositionsPerSurgery: any = [];
 
-    constructor(private apiService: ApiService, public toastr: ToastsManager, vcr: ViewContainerRef) {
+    constructor(private apiService: ApiService, public toastr: ToastsManager, private languageService: LanguageService, vcr: ViewContainerRef) {
         this.toastr.setRootViewContainerRef(vcr);
     }
 
@@ -69,7 +70,6 @@ export class AdviceComponent implements OnInit {
             const surgery_position = {
                 'surgery_id': surgery_id,
                 'position_id': position_id,
-                'surface_area': 0
             };
 
             if ( Object.keys(this.selectedPositionsPerSurgery[surgery]).length === 1) {
@@ -83,28 +83,6 @@ export class AdviceComponent implements OnInit {
             // if surgery + position combination already exist, pop from array
             this.selectedPositionsPerSurgery.splice(surgery_position_index, 1);
         }
-    }
-
-    addSurfaceToSurgeryPositionEvent(surgery_id, position_id, surface_area)
-    {
-        const surgery_position_index = _.findIndex(this.selectedPositionsPerSurgery,
-            {
-                'surgery_id': surgery_id,
-                'position_id': position_id
-            });
-
-        this.selectedPositionsPerSurgery[surgery_position_index].surface_area = parseFloat(surface_area);
-    }
-
-    addSurfaceToSurgeryPosition(surgery_id, position_id, event: any)
-    {
-        const surgery_position_index = _.findIndex(this.selectedPositionsPerSurgery,
-            {
-                'surgery_id': surgery_id,
-                'position_id': position_id
-            });
-
-        this.selectedPositionsPerSurgery[surgery_position_index].surface_area = parseFloat(event.target.value);
     }
 
     checkboxPositionInSurgery(surgery_id, position_id)
@@ -132,7 +110,7 @@ export class AdviceComponent implements OnInit {
 
     create()
     {
-        this.model.product_id = this.adviceProduct;
+        this.model.products = this.adviceProduct;
 
         this.apiService.post('advices', this.model).then(() => {
             this.getAdvices();
@@ -151,8 +129,25 @@ export class AdviceComponent implements OnInit {
 
     fillProducts()
     {
-
+        this.adviceProduct = this.selectedAdvice.product_id;
     }
+
+    fillSurgeryPositions()
+    {
+        _.forEach(this.selectedAdvice.position_surgery_ids, (surgery) => {
+
+            const surgery_index = _.findIndex(this.selectedPositionsPerSurgery, {
+                'surgery_id': surgery.surgery_id,
+            });
+
+            if (surgery_index === -1){
+                this.toggleSurgery(surgery.surgery_id);
+            }
+
+            this.addPositionToSurgery(surgery.surgery_id, surgery.position_id);
+        });
+    }
+
 
     getAdvice(id)
     {
@@ -216,16 +211,28 @@ export class AdviceComponent implements OnInit {
         this.loadingAdvice = true;
         this.apiService.get('advice/' + id).then((advice) => {
             this.selectedAdvice = advice;
+            this.fillSurgeryPositions();
+            this.fillProducts();
             this.loadingAdvice = false;
         });
     }
 
-    ngOnInit()
+    init()
     {
         this.getAdvices();
         this.getPositions();
         this.getSurgeries();
         this.getProducts();
+    }
+
+    ngOnInit()
+    {
+        this.init();
+        this.languageService.languageChanged.subscribe( value => {
+            if (value === true) {
+                this.init();
+            }
+        });
     }
 
     positionInSurgery(surgery_id, position_id)
@@ -246,6 +253,7 @@ export class AdviceComponent implements OnInit {
         this.selectedAdvice = {};
         this.selectedProducts = [];
         this.unselectedProducts = [];
+        this.selectedPositionsPerSurgery = [];
     }
 
     selectProduct(id)
@@ -318,7 +326,15 @@ export class AdviceComponent implements OnInit {
 
     updateProducts(id)
     {
-        this.selectedAdvice.product_id = this.adviceProduct;
+        this.selectedAdvice.products = this.adviceProduct;
+        this.update(id);
+        this.reset();
+    }
+
+    updateSurgeries(id)
+    {
+        console.log(this.selectedPositionsPerSurgery);
+        this.selectedAdvice.position_surgery_ids = this.selectedPositionsPerSurgery;
         this.update(id);
         this.reset();
     }

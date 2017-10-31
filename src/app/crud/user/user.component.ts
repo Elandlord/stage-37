@@ -8,6 +8,7 @@ import { Country } from '../../models/country/country';
 import { User} from '../../models/user/user';
 import { Role } from '../../models/role/role';
 import { ApiService } from '../../core/api.service';
+import {LanguageService} from '../../services/language.service';
 
 
 @Component({
@@ -29,7 +30,7 @@ export class UserComponent implements OnInit {
   selectedUser: any = {};
   overlaySelected = false;
 
-  constructor(private apiService: ApiService, public toastr: ToastsManager, vcr: ViewContainerRef) {
+  constructor(private apiService: ApiService, public toastr: ToastsManager, private languageService: LanguageService, vcr: ViewContainerRef) {
       this.toastr.setRootViewContainerRef(vcr);
   }
 
@@ -102,11 +103,22 @@ export class UserComponent implements OnInit {
         this.overlaySelected = false;
     }
 
-    ngOnInit()
+    init()
     {
         this.getUsers();
         this.getCountries();
         this.getRoles();
+    }
+
+
+    ngOnInit()
+    {
+        this.init();
+        this.languageService.languageChanged.subscribe( value => {
+            if (value === true) {
+                this.init();
+            }
+        });
     }
 
     update(id)

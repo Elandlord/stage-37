@@ -3,7 +3,8 @@ import {Component, OnInit, ViewContainerRef} from '@angular/core';
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
 import { Position } from '../../models/position/position';
-import {ApiService} from '../../core/api.service'; ( ApiService);
+import {ApiService} from '../../core/api.service';
+import {LanguageService} from '../../services/language.service';
 
 @Component({
   selector: 'app-position',
@@ -22,7 +23,7 @@ export class PositionComponent implements OnInit {
     selectedPosition: any = {};
     overlaySelected = false;
 
-    constructor(private apiService: ApiService, public toastr: ToastsManager, vcr: ViewContainerRef) {
+    constructor(private apiService: ApiService, public toastr: ToastsManager, private languageService: LanguageService, vcr: ViewContainerRef) {
         this.toastr.setRootViewContainerRef(vcr);
     }
 
@@ -71,9 +72,19 @@ export class PositionComponent implements OnInit {
         this.overlaySelected = false;
     }
 
-    ngOnInit()
+    init()
     {
         this.getPositions();
+    }
+
+    ngOnInit()
+    {
+        this.init();
+        this.languageService.languageChanged.subscribe( value => {
+            if (value === true) {
+                this.init();
+            }
+        });
     }
 
     update(id)

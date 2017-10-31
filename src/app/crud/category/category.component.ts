@@ -4,6 +4,7 @@ import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
 import { Category } from '../../models/category/category';
 import { ApiService } from '../../core/api.service';
+import {LanguageService} from '../../services/language.service';
 
 @Component({
   selector: 'app-category',
@@ -22,7 +23,7 @@ export class CategoryComponent implements OnInit {
     selectedCategory: any = {};
     overlaySelected = false;
 
-    constructor(private apiService: ApiService, public toastr: ToastsManager, vcr: ViewContainerRef) {
+    constructor(private apiService: ApiService, public toastr: ToastsManager, private languageService: LanguageService, vcr: ViewContainerRef) {
         this.toastr.setRootViewContainerRef(vcr);
     }
 
@@ -71,9 +72,19 @@ export class CategoryComponent implements OnInit {
         this.overlaySelected = false;
     }
 
-    ngOnInit()
+    init()
     {
         this.getCategories();
+    }
+
+    ngOnInit()
+    {
+        this.init();
+        this.languageService.languageChanged.subscribe( value => {
+            if (value === true) {
+                this.init();
+            }
+        });
     }
 
     update(id)

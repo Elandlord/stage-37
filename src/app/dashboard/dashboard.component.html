@@ -11,6 +11,11 @@
                 </div>
             </li>
             <li class="space-inside-up-sm">
+                <div class="dashboard-align">
+                    <select name="language" [ngModel]="model.lang" (change)="setLanguage($event)" id="language" class="bg-tertiary text-color-light space-inside-sides-sm space-inside-xs border-curved">
+                        <option *ngFor="let language of supportedLanguages; let i = index" [value]="language.code">{{ language.name }}</option>
+                    </select>
+                </div>
                 <div>
                     <hr>
                     <span><i class="material-icons font-lg text-color-light">shopping_basket</i><h5 class="inline-block text-color-light">Producten</h5></span>
