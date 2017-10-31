@@ -29,7 +29,9 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-      this.model.lang = localStorage.getItem('lang').replace(/['"]+/g, '');
+      if(localStorage.getItem('lang') !== null){
+          this.model.lang = localStorage.getItem('lang').replace(/['"]+/g, '');
+      }
       this.supportedLanguages = this.languageService.getSupportedLanguages();
   }
 
