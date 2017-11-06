@@ -9,24 +9,26 @@ export class LanguageService {
 
   getSupportedLanguages()
   {
-    return [
-        {
-            'code': 'en',
-            'name': 'English'
-        },
-        {
-            'code': 'de',
-            'name': 'German'
-        },
-        {
-            'code': 'fr',
-            'name': 'French'
-        },
-        {
-            'code': 'nl',
-            'name': 'Dutch'
-        }
-    ];
+      const supportedLanguage = [
+          {
+              'code': 'en',
+              'name': 'English'
+          },
+          {
+              'code': 'de',
+              'name': 'German'
+          },
+          {
+              'code': 'fr',
+              'name': 'French'
+          },
+          {
+              'code': 'nl',
+              'name': 'Dutch'
+          }
+      ];
+
+    return supportedLanguage;
   }
 
   setLanguage(language)
