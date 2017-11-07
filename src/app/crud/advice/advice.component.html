@@ -15,6 +15,15 @@
     </div>
   </div>
 
+  <div class="container space-inside-md left animated fadeIn" *ngIf="!loading">
+    <div class="col-lg-10 space-inside-down-sm">
+      <div class="form-group">
+        <input type="text" (keyup)="setSearchParam($event)" class="form-control inline-block" placeholder="Zoek advies..." />
+        <i class="glyphicon glyphicon-search form-control-feedback bg-tertiary text-color-light pointer"></i>
+      </div>
+    </div>
+  </div>
+
   <!--FORM SURGERIES-->
   <app-overlay *ngIf="overlaySurgery">
     <div class="col-lg-12 text-center space-inside-xl" *ngIf="loadingAdvice">
@@ -133,12 +142,6 @@
               <label for="order">Order</label>
               <input class="form-control" type="text" id="order" name="order" [(ngModel)]="model.order" #order="ngModel" required/>
               <div *ngIf="f.submitted && !order.valid" class="help-block">Order is verplicht</div>
-            </div>
-            <div class="form-group">
-              <div class="col-lg-4" *ngFor="let product of products; let i = index">
-                <label >Combineer product</label>
-                <input class="space-inside-sides-xs" type="checkbox" [id]="product.id" (change)="toggleAdviceProduct(product.id)" [checked]="checkAdviceProduct(product.id)"><label [for]="product.id" class="text-light pointer space-inside-left-xs">{{ product.name }}</label>  <br/>
-              </div>
             </div>
             <div class="form-group">
               <button class="btn bg-tertiary text-color-light bg-tertiary-hover-lighten-xs transition-normal">Opslaan</button>

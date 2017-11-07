@@ -1,4 +1,7 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
+import { Router, ActivatedRoute} from '@angular/router';
+
+import * as _ from 'lodash';
 
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
@@ -19,11 +22,16 @@ export class RoleComponent implements OnInit {
 
     model: any = {};
     roles: Role[];
+    referenceRoles: Role[];
 
     selectedRole: any = {};
     overlaySelected = false;
 
-    constructor(private apiService: ApiService, public toastr: ToastsManager, private languageService: LanguageService, vcr: ViewContainerRef) {
+    constructor(private apiService: ApiService,
+                public toastr: ToastsManager,
+                private languageService: LanguageService,
+                vcr: ViewContainerRef,
+                private router: Router,) {
         this.toastr.setRootViewContainerRef(vcr);
     }
 
@@ -63,6 +71,7 @@ export class RoleComponent implements OnInit {
         this.loading = true;
         this.apiService.get('roles').then((roles) => {
             this.roles = roles;
+            this.referenceRoles = roles;
             this.loading = false;
         });
     }
@@ -82,10 +91,19 @@ export class RoleComponent implements OnInit {
     {
         this.init();
         this.languageService.languageChanged.subscribe( value => {
-            if (value === true) {
+            if (value === true && this.router.url === '/roles') {
                 this.init();
             }
         });
+    }
+
+    setSearchParam(event: any)
+    {
+        const searchRoles = _.filter(this.referenceRoles, (role) => {
+            return role.name.toLowerCase().match(event.target.value.toLowerCase());
+        });
+
+        this.roles = searchRoles;
     }
 
     update(id)

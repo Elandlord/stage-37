@@ -1,10 +1,13 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
 
+import * as _ from 'lodash';
+
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
 import { Category } from '../../models/category/category';
 import { ApiService } from '../../core/api.service';
 import {LanguageService} from '../../services/language.service';
+import { Router, ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-category',
@@ -19,11 +22,16 @@ export class CategoryComponent implements OnInit {
 
     model: any = {};
     categories: Category[];
+    referenceCategories: Category[];
 
     selectedCategory: any = {};
     overlaySelected = false;
 
-    constructor(private apiService: ApiService, public toastr: ToastsManager, private languageService: LanguageService, vcr: ViewContainerRef) {
+    constructor(private apiService: ApiService,
+                public toastr: ToastsManager,
+                private languageService: LanguageService,
+                vcr: ViewContainerRef,
+                private router: Router) {
         this.toastr.setRootViewContainerRef(vcr);
     }
 
@@ -62,6 +70,7 @@ export class CategoryComponent implements OnInit {
         this.loading = true;
         this.apiService.get('categories').then((categories) => {
             this.categories = categories;
+            this.referenceCategories = categories;
             this.loading = false;
         });
     }
@@ -81,10 +90,19 @@ export class CategoryComponent implements OnInit {
     {
         this.init();
         this.languageService.languageChanged.subscribe( value => {
-            if (value === true) {
+            if (value === true && this.router.url === '/categories') {
                 this.init();
             }
         });
+    }
+
+    setSearchParam(event: any)
+    {
+        const searchCategories = _.filter(this.referenceCategories, (category) => {
+            return category.name.toLowerCase().match(event.target.value.toLowerCase());
+        });
+
+        this.categories = searchCategories;
     }
 
     update(id)

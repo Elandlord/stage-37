@@ -1,4 +1,5 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
+import { Router, ActivatedRoute} from '@angular/router';
 
 import * as _ from 'lodash';
 
@@ -24,13 +25,18 @@ export class UserComponent implements OnInit {
 
   model: any = {};
   users: User[];
+  referenceUsers: User[];
   countries: Country[];
   roles: Role[];
 
   selectedUser: any = {};
   overlaySelected = false;
 
-  constructor(private apiService: ApiService, public toastr: ToastsManager, private languageService: LanguageService, vcr: ViewContainerRef) {
+  constructor(private apiService: ApiService,
+              public toastr: ToastsManager,
+              private languageService: LanguageService,
+              vcr: ViewContainerRef,
+              private router: Router) {
       this.toastr.setRootViewContainerRef(vcr);
   }
 
@@ -93,6 +99,7 @@ export class UserComponent implements OnInit {
       this.loading = true;
       this.apiService.get('users').then((users) => {
           this.users = users;
+          this.referenceUsers = users;
           this.loading = false;
       });
     }
@@ -115,10 +122,19 @@ export class UserComponent implements OnInit {
     {
         this.init();
         this.languageService.languageChanged.subscribe( value => {
-            if (value === true) {
+            if (value === true && this.router.url === '/users') {
                 this.init();
             }
         });
+    }
+
+    setSearchParam(event: any)
+    {
+        const searchUsers = _.filter(this.referenceUsers, (user) => {
+            return user.name.toLowerCase().match(event.target.value.toLowerCase());
+        });
+
+        this.users = searchUsers;
     }
 
     update(id)

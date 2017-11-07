@@ -1,10 +1,13 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
+import { Router, ActivatedRoute} from '@angular/router';
+
+import * as _ from 'lodash';
 
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
 import { Article} from '../../models/article/article';
 import { Category } from '../../models/category/category';
-import { Role } from "../../models/role/role";
+import { Role } from '../../models/role/role';
 import {ApiService} from '../../core/api.service';
 import {LanguageService} from '../../services/language.service';
 
@@ -21,6 +24,7 @@ export class ArticleComponent implements OnInit {
 
     model: any = {};
     articles: Article[];
+    referenceArticles: Article[];
     categories: Category[];
     roles: Role[];
 
@@ -28,7 +32,11 @@ export class ArticleComponent implements OnInit {
     selectedArticle: any = {};
     overlaySelected = false;
 
-    constructor(private apiService: ApiService, public toastr: ToastsManager, private languageService: LanguageService, vcr: ViewContainerRef) {
+    constructor(private apiService: ApiService,
+                public toastr: ToastsManager,
+                private languageService: LanguageService,
+                vcr: ViewContainerRef,
+                private router: Router) {
         this.toastr.setRootViewContainerRef(vcr);
     }
 
@@ -69,6 +77,7 @@ export class ArticleComponent implements OnInit {
         this.loading = true;
         this.apiService.get('articles').then((articles) => {
             this.articles = articles;
+            this.referenceArticles = articles;
             this.loading = false;
         });
     }
@@ -117,10 +126,19 @@ export class ArticleComponent implements OnInit {
     {
         this.init();
         this.languageService.languageChanged.subscribe( value => {
-            if (value === true) {
+            if (value === true && this.router.url === '/articles') {
                 this.init();
             }
         });
+    }
+
+    setSearchParam(event: any)
+    {
+        const searchArticles = _.filter(this.referenceArticles, (article) => {
+            return article.name.toLowerCase().match(event.target.value.toLowerCase());
+        });
+
+        this.articles = searchArticles;
     }
 
     toggleCombinedRoles(id)

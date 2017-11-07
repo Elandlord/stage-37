@@ -1,4 +1,7 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
+import { Router, ActivatedRoute} from '@angular/router';
+
+import * as _ from 'lodash';
 
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
@@ -19,11 +22,16 @@ export class ProductLineComponent implements OnInit {
 
     model: any = {};
     productLines: ProductLine[];
+    referenceProductLines: ProductLine[];
 
     selectedProductLine: any = {};
     overlaySelected = false;
 
-    constructor(private apiService: ApiService, public toastr: ToastsManager, private languageService: LanguageService, vcr: ViewContainerRef) {
+    constructor(private apiService: ApiService,
+                public toastr: ToastsManager,
+                private languageService: LanguageService,
+                vcr: ViewContainerRef,
+                private router: Router) {
         this.toastr.setRootViewContainerRef(vcr);
     }
 
@@ -62,6 +70,7 @@ export class ProductLineComponent implements OnInit {
         this.loading = true;
         this.apiService.get('productlines').then((productlines) => {
             this.productLines = productlines;
+            this.referenceProductLines = productlines;
             this.loading = false;
         });
     }
@@ -80,10 +89,19 @@ export class ProductLineComponent implements OnInit {
     {
         this.init();
         this.languageService.languageChanged.subscribe( value => {
-            if (value === true) {
+            if (value === true && this.router.url === '/product-lines') {
                 this.init();
             }
         });
+    }
+
+    setSearchParam(event: any)
+    {
+        const searchProductLines = _.filter(this.referenceProductLines, (productline) => {
+            return productline.name.toLowerCase().match(event.target.value.toLowerCase());
+        });
+
+        this.productLines = searchProductLines;
     }
 
     update(id)

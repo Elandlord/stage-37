@@ -1,4 +1,6 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
+import { Router, ActivatedRoute} from '@angular/router';
+
 
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
@@ -27,6 +29,7 @@ export class AdviceComponent implements OnInit {
     model: any = {};
     // Advices is not the correct plural form of Advice
     advices: Advice[];
+    referenceAdvices: Advice[];
     adviceProduct: any = [];
     positions: Position[];
     products: Product[];
@@ -44,7 +47,11 @@ export class AdviceComponent implements OnInit {
     selectedSurgeries: any = [];
     selectedPositionsPerSurgery: any = [];
 
-    constructor(private apiService: ApiService, public toastr: ToastsManager, private languageService: LanguageService, vcr: ViewContainerRef) {
+    constructor(private apiService: ApiService,
+                public toastr: ToastsManager,
+                private languageService: LanguageService,
+                vcr: ViewContainerRef,
+                private router: Router,) {
         this.toastr.setRootViewContainerRef(vcr);
     }
 
@@ -161,6 +168,7 @@ export class AdviceComponent implements OnInit {
     {
         this.apiService.get('advices').then((advices) => {
             this.advices = advices;
+            this.referenceAdvices = advices;
         });
     }
 
@@ -229,7 +237,7 @@ export class AdviceComponent implements OnInit {
     {
         this.init();
         this.languageService.languageChanged.subscribe( value => {
-            if (value === true) {
+            if (value === true && this.router.url === '/advices') {
                 this.init();
             }
         });
@@ -260,6 +268,15 @@ export class AdviceComponent implements OnInit {
     {
         this.unselectedProducts.splice(this.unselectedProducts.indexOf(id), 1);
         this.selectedProducts.push(id);
+    }
+
+    setSearchParam(event: any)
+    {
+        const searchAdvices = _.filter(this.referenceAdvices, (advice) => {
+            return advice.name.toLowerCase().match(event.target.value.toLowerCase());
+        });
+
+        this.advices = searchAdvices;
     }
 
     surgeryInArray(id)

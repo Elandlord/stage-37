@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { Router, ActivatedRoute} from '@angular/router';
+
+import * as _ from 'lodash';
 
 import { Country } from '../../models/country/country';
 import {ApiService} from '../../core/api.service';
@@ -15,14 +18,18 @@ export class CountryComponent implements OnInit {
 
     title = 'Landen';
     countries: Country[];
+    referenceCountries: Country[];
 
-    constructor(private apiService: ApiService, private languageService: LanguageService) { }
+    constructor(private apiService: ApiService,
+                private languageService: LanguageService,
+                private router: Router,) { }
 
     getCountries()
     {
       this.loading = true;
         this.apiService.get('countries').then((countries) => {
           this.countries = countries;
+          this.referenceCountries = countries;
           this.loading = false;
         });
     }
@@ -32,14 +39,23 @@ export class CountryComponent implements OnInit {
         this.getCountries();
     }
 
-  ngOnInit()
-  {
+    ngOnInit()
+    {
       this.init();
       this.languageService.languageChanged.subscribe( value => {
-          if (value === true) {
+          if (value === true && this.router.url === '/countries') {
               this.init();
           }
       });
-  }
+    }
+
+    setSearchParam(event: any)
+    {
+        const searchCountries = _.filter(this.referenceCountries, (country) => {
+            return country.name.toLowerCase().match(event.target.value.toLowerCase());
+        });
+
+        this.countries = searchCountries;
+    }
 
 }

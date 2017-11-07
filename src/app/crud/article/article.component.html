@@ -14,6 +14,16 @@
       <img src="../../../assets/img/svg-loaders/three-dots.svg" />
     </div>
   </div>
+
+  <div class="container space-inside-md left animated fadeIn" *ngIf="!loading">
+    <div class="col-lg-10 space-inside-down-sm">
+      <div class="form-group">
+        <input type="text" (keyup)="setSearchParam($event)" class="form-control inline-block" placeholder="Zoek artikel..." />
+        <i class="glyphicon glyphicon-search form-control-feedback bg-tertiary text-color-light pointer"></i>
+      </div>
+    </div>
+  </div>
+
   <app-overlay *ngIf="overlaySelected">
     <div class="container">
       <div class="col-lg-10 space-inside-sides-xl">

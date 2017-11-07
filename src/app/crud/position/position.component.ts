@@ -1,4 +1,8 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
+import { Router, ActivatedRoute} from '@angular/router';
+
+
+import * as _ from 'lodash';
 
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
@@ -19,11 +23,16 @@ export class PositionComponent implements OnInit {
 
     model: any = {};
     positions: Position[];
+    referencePositions: Position[];
 
     selectedPosition: any = {};
     overlaySelected = false;
 
-    constructor(private apiService: ApiService, public toastr: ToastsManager, private languageService: LanguageService, vcr: ViewContainerRef) {
+    constructor(private apiService: ApiService,
+                public toastr: ToastsManager,
+                private languageService: LanguageService,
+                vcr: ViewContainerRef,
+                private router: Router) {
         this.toastr.setRootViewContainerRef(vcr);
     }
 
@@ -62,6 +71,7 @@ export class PositionComponent implements OnInit {
         this.loading = true;
         this.apiService.get('positions').then((positions) => {
             this.positions = positions;
+            this.referencePositions = positions;
             this.loading = false;
         });
     }
@@ -81,10 +91,19 @@ export class PositionComponent implements OnInit {
     {
         this.init();
         this.languageService.languageChanged.subscribe( value => {
-            if (value === true) {
+            if (value === true && this.router.url === '/positions') {
                 this.init();
             }
         });
+    }
+
+    setSearchParam(event: any)
+    {
+        const searchPositions = _.filter(this.referencePositions, (position) => {
+            return position.name.toLowerCase().match(event.target.value.toLowerCase());
+        });
+
+        this.positions = searchPositions;
     }
 
     update(id)

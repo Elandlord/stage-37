@@ -1,4 +1,5 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
+import { Router, ActivatedRoute} from '@angular/router';
 
 import * as _ from 'lodash';
 
@@ -22,66 +23,67 @@ import {LanguageService} from '../../services/language.service';
 })
 export class ProductComponent implements OnInit {
 
-  // Loading
-  loading = false;
-  loadingProduct = false;
+    // Loading
+    loading = false;
+    loadingProduct = false;
 
-  // Title
-  title = 'Producten';
+    // Title
+    title = 'Producten';
 
-  // Model for create
-  model: any = {};
+    // Model for create
+    model: any = {};
 
-  // Overlays
-  overlayOpen = false;
-  overlaySelected = false;
-  overlayCountry = false;
-  overlaySurgery = false;
-  overlaySettings = false;
-  overlayCombinedProducts = false;
+    // Overlays
+    overlayOpen = false;
+    overlaySelected = false;
+    overlayCountry = false;
+    overlaySurgery = false;
+    overlaySettings = false;
+    overlayCombinedProducts = false;
 
-  // Countries
-  countries: Country[];
-  selectedCountries: any = [];
-  unselectedCountries: any = [];
+    // Countries
+    countries: Country[];
+    selectedCountries: any = [];
+    unselectedCountries: any = [];
 
-  // Positions
-  positions: Position[];
+    // Positions
+    positions: Position[];
 
-  // Productlines
-  productLines: ProductLine[];
+    // Productlines
+    productLines: ProductLine[];
 
-  // Products
-  products: Product[];
-  referenceProducts: Product[];
-  selectedCombinedProducts: any = [];
-  selectedProduct: any = {};
+    // Products
+    products: Product[];
+    referenceProducts: Product[];
+    searchProducts: Product[];
+    selectedCombinedProducts: any = [];
+    selectedProduct: any = {};
 
-  // product from search
-  searchProducts: Product[];
+    // Productsettings
+    productSettings: ProductSetting[];
+    referenceProductSettings: ProductSetting[];
+    selectedProductSettings: any = [];
 
-  // Productsettings
-  productSettings: ProductSetting[];
-  referenceProductSettings: ProductSetting[];
-  selectedProductSettings: any = [];
-  toggledProductSettings: any = [];
+    // Surgeries
+    surgeries: Surgery[];
+    selectedSurgeries: any = [];
+    selectedPositionsPerSurgery: any = [];
 
-  // Surgeries
-  surgeries: Surgery[];
-  selectedSurgeries: any = [];
-  selectedPositionsPerSurgery: any = [];
+    constructor(private apiService: ApiService,
+                public toastr: ToastsManager,
+                private languageService: LanguageService,
+                vcr: ViewContainerRef,
+                private router: Router,) {
+        this.toastr.setRootViewContainerRef(vcr);
+    }
 
-  constructor(private apiService: ApiService, public toastr: ToastsManager, private languageService: LanguageService, vcr: ViewContainerRef) {
-      this.toastr.setRootViewContainerRef(vcr);
-  }
+    addItem()
+    {
+        this.overlayOpen = true;
+    }
 
-  addItem()
-  {
-    this.overlayOpen = true;
-  }
-
-  addPositionToSurgery(surgery_id, position_id)
-  {
+    addPositionToSurgery(surgery_id, position_id)
+    {
       const surgery_position_index = _.findIndex(this.selectedPositionsPerSurgery,
           {
             'surgery_id': surgery_id,
@@ -111,10 +113,10 @@ export class ProductComponent implements OnInit {
         // if surgery + position combination already exist, pop from array
         this.selectedPositionsPerSurgery.splice(surgery_position_index, 1);
       }
-  }
+    }
 
-  addSurfaceToSurgeryPositionEvent(surgery_id, position_id, surface_area)
-  {
+    addSurfaceToSurgeryPositionEvent(surgery_id, position_id, surface_area)
+    {
       const surgery_position_index = _.findIndex(this.selectedPositionsPerSurgery,
           {
               'surgery_id': surgery_id,
@@ -122,10 +124,10 @@ export class ProductComponent implements OnInit {
           });
 
       this.selectedPositionsPerSurgery[surgery_position_index].surface_area = parseFloat(surface_area);
-  }
+    }
 
-  addSurfaceToSurgeryPosition(surgery_id, position_id, event: any)
-  {
+    addSurfaceToSurgeryPosition(surgery_id, position_id, event: any)
+    {
       const surgery_position_index = _.findIndex(this.selectedPositionsPerSurgery,
           {
             'surgery_id': surgery_id,
@@ -133,10 +135,10 @@ export class ProductComponent implements OnInit {
           });
 
       this.selectedPositionsPerSurgery[surgery_position_index].surface_area = parseFloat(event.target.value);
-  }
+    }
 
-  checkboxPositionInSurgery(surgery_id, position_id)
-  {
+    checkboxPositionInSurgery(surgery_id, position_id)
+    {
       const surgery_position_index = _.findIndex(this.selectedPositionsPerSurgery,
           {
               'surgery_id': surgery_id,
@@ -147,349 +149,339 @@ export class ProductComponent implements OnInit {
       {
           return 'checked';
       }
-  }
+    }
 
-  checkProductCombined(product_id)
-  {
+    checkProductCombined(product_id)
+    {
       const index = this.selectedCombinedProducts.indexOf(product_id);
 
       if (index !== -1){
           return 'checked';
       }
-  }
+    }
 
-  checkProductSetting(productsetting_id)
-  {
-      const index = this.selectedProductSettings.indexOf(productsetting_id);
-
-      if(index !== -1){
-          return 'checked';
-      }
-  }
-
-  create()
-  {
-      this.apiService.post('products', this.model).then(() => {
+    create()
+    {
+        this.apiService.post('products', this.model).then(() => {
           this.getProducts();
           this.hideOverlay();
           this.toastr.success('Product succesvol toegevoegd.', 'Gelukt!');
-      }).catch(() => {
+        }).catch(() => {
           this.toastr.warning('Toevoegen mislukt. Controleer of de velden correct gevuld zijn..', 'Oeps!');
-      });
-  }
+        });
+    }
 
-  createCombinedProduct(product_id)
-  {
-      const combined_products = {
+    createCombinedProduct(product_id)
+    {
+        const combined_products = {
           'combined_products': this.selectedCombinedProducts
-      };
+        };
 
-      this.apiService.post('product/' + product_id + '/combined_products', combined_products).then(() => {
+        this.apiService.post('product/' + product_id + '/combined_products', combined_products).then(() => {
           this.getProducts();
           this.hideOverlay();
           this.toastr.success('Producten succesvol gecombineerd', 'Gelukt!');
-      }).catch(() => {
+        }).catch(() => {
           this.toastr.warning('Aanpassen mislukt. Controleer of de velden correct gevuld zijn..', 'Oeps!');
-      });
-  }
+        });
+    }
 
-  createProductSettings(product_id)
-  {
-      const productsettings = {
+    createProductSettings(product_id)
+    {
+        const productsettings = {
           'settings': this.selectedProductSettings
-      };
+        };
 
-      this.apiService.post('product/' + product_id + '/settings', productsettings).then(() => {
+        this.apiService.post('product/' + product_id + '/settings', productsettings).then(() => {
           this.getProducts();
           this.hideOverlay();
           this.toastr.success('Productinstellingen succesvol aangepast', 'Gelukt!');
-      }).catch(() => {
+        }).catch(() => {
           this.toastr.warning('Aanpassen mislukt. Controleer of de velden correct gevuld zijn..', 'Oeps!');
-      });
-  }
+        });
+    }
 
-  createSurgeryPosition(product_id)
-  {
-    const surgery_position = {
-      'surgery_position': this.selectedPositionsPerSurgery
-    };
-    this.apiService.post('product/' + product_id + '/surgeryposition', surgery_position).then(() => {
-        this.getProducts();
-        this.hideOverlay();
-        this.toastr.success('Operaties en posities succesvol aangepast', 'Gelukt!');
-    }).catch(() => {
-        this.toastr.warning('Aanpassen mislukt. Controleer of de velden correct gevuld zijn..', 'Oeps!');
-    });
-  }
+    createSurgeryPosition(product_id)
+    {
+        const surgery_position = {
+          'surgery_position': this.selectedPositionsPerSurgery
+        };
+        this.apiService.post('product/' + product_id + '/surgeryposition', surgery_position).then(() => {
+            this.getProducts();
+            this.hideOverlay();
+            this.toastr.success('Operaties en posities succesvol aangepast', 'Gelukt!');
+        }).catch(() => {
+            this.toastr.warning('Aanpassen mislukt. Controleer of de velden correct gevuld zijn..', 'Oeps!');
+        });
+    }
 
-  createCountries(product_id)
-  {
-    const saveCountries = {
-      'countries': this.selectedCountries
-    };
+    createCountries(product_id)
+    {
+        const saveCountries = {
+          'countries': this.selectedCountries
+        };
 
-    this.apiService.post('product/' + product_id + '/countries', saveCountries).then(() => {
-        this.getProducts();
-        this.hideOverlay();
-        this.toastr.success('Landen succesvol aangepast', 'Gelukt!');
-    }).catch(() => {
-        this.toastr.warning('Aanpassen mislukt. Controleer of de velden correct gevuld zijn..', 'Oeps!');
-    });
-  }
+        this.apiService.post('product/' + product_id + '/countries', saveCountries).then(() => {
+            this.getProducts();
+            this.hideOverlay();
+            this.toastr.success('Landen succesvol aangepast', 'Gelukt!');
+        }).catch(() => {
+            this.toastr.warning('Aanpassen mislukt. Controleer of de velden correct gevuld zijn..', 'Oeps!');
+        });
+    }
 
 
-  destroy(id)
-  {
-    this.apiService.delete('product', id).then(() => {
-      this.getProducts();
-      this.toastr.info('Product succesvol verwijderd.', 'Gelukt!');
-    });
-  }
+    destroy(id)
+    {
+        this.apiService.delete('product', id).then(() => {
+          this.getProducts();
+          this.toastr.info('Product succesvol verwijderd.', 'Gelukt!');
+        });
+    }
 
-  fillCombinedProducts()
-  {
-      _.forEach(this.selectedProduct.combined_products.data, (combined_product) => {
+    fillCombinedProducts()
+    {
+        _.forEach(this.selectedProduct.combined_products.data, (combined_product) => {
           this.selectedCombinedProducts.push(combined_product.id);
-      });
-  }
+        });
+    }
 
-  fillCountries()
-  {
+    fillCountries()
+    {
 
-    // fill unselectedCountries array with all countries
-    _.forEach(this.countries, (country) => this.unselectedCountries.push(country.id));
+        // fill unselectedCountries array with all countries
+        _.forEach(this.countries, (country) => this.unselectedCountries.push(country.id));
 
-    // select countries from back-end call
-    _.forEach(this.selectedProduct.countries.data, (country) => {
-        this.selectCountry(country);
-    });
-  }
+        // select countries from back-end call
+        _.forEach(this.selectedProduct.countries.data, (country) => {
+            this.selectCountry(country);
+        });
+    }
 
-  fillProductSettings(id)
-  {
-      this.productSettings = _.filter(this.referenceProductSettings, {
+    fillProductSettings(id)
+    {
+        this.productSettings = _.filter(this.referenceProductSettings, {
          'product_id': id
-      });
-
-      _.forEach(this.selectedProduct.settings.data, (productsetting) => {
-          this.selectedProductSettings.push(productsetting.id);
-      });
-  }
-
-  fillSurgeryPositions()
-  {
-    _.forEach(this.selectedProduct.position_product_surgery.data, (surgery) => {
-
-        const surgery_index = _.findIndex(this.selectedPositionsPerSurgery, {
-            'surgery_id': surgery.surgery_id,
         });
 
-        if (surgery_index === -1){
-            this.toggleSurgery(surgery.surgery_id);
-        }
-
-        this.addPositionToSurgery(surgery.surgery_id, surgery.position_id);
-        this.addSurfaceToSurgeryPositionEvent(surgery.surgery_id, surgery.position_id, surgery.surface_area);
-      });
-  }
-
-
-  getCountries()
-  {
-    this.apiService.get('countries').then((countries) => {
-        this.countries = countries;
-    });
-  }
-
-  getCountryNameById(id)
-  {
-    for (const country of this.countries)
-    {
-      if (country.id === id)
-      {
-        return country.name;
-      }
+        _.forEach(this.selectedProduct.settings.data, (productsetting) => {
+          this.selectedProductSettings.push(productsetting.id);
+        });
     }
-  }
 
-  getPositions()
-  {
-    this.apiService.get('positions').then((positions) => {
-      this.positions = positions;
-    });
-  }
+    fillSurgeryPositions()
+    {
+        _.forEach(this.selectedProduct.position_product_surgery.data, (surgery) => {
+            const surgery_index = _.findIndex(this.selectedPositionsPerSurgery, {
+                'surgery_id': surgery.surgery_id,
+            });
 
-  getProduct(id)
-  {
-    this.apiService.get('product/' + id).then( (product) => {
-        this.selectedProduct = product;
-        this.overlaySelected = true;
-    });
-  }
+            if (surgery_index === -1){
+                this.toggleSurgery(surgery.surgery_id);
+            }
 
-  getProducts()
-  {
-    this.loading = true;
-      this.apiService.get('products').then((products) => {
+            this.addPositionToSurgery(surgery.surgery_id, surgery.position_id);
+            this.addSurfaceToSurgeryPositionEvent(surgery.surgery_id, surgery.position_id, surgery.surface_area);
+        });
+    }
+
+
+    getCountries()
+    {
+        this.apiService.get('countries').then((countries) => {
+            this.countries = countries;
+        });
+    }
+
+    getCountryNameById(id)
+    {
+        for (const country of this.countries)
+        {
+          if (country.id === id)
+          {
+            return country.name;
+          }
+        }
+    }
+
+    getPositions()
+    {
+        this.apiService.get('positions').then((positions) => {
+          this.positions = positions;
+        });
+    }
+
+    getProduct(id)
+    {
+        this.apiService.get('product/' + id).then( (product) => {
+            this.selectedProduct = product;
+            this.overlaySelected = true;
+        });
+    }
+
+    getProducts()
+    {
+        this.loading = true;
+        this.apiService.get('products').then((products) => {
           this.products = products;
           this.referenceProducts = products;
           this.loading = false;
-      });
-  }
+        });
+    }
 
-  getProductLineNameById(id)
-  {
-    if (this.productLines !== undefined)
+    getProductLineNameById(id)
     {
-        for (const productLine of this.productLines)
+        if (this.productLines !== undefined)
         {
-            if (productLine.id === id)
+            for (const productLine of this.productLines)
             {
-                return productLine.name;
+                if (productLine.id === id)
+                {
+                    return productLine.name;
+                }
             }
         }
+        return 'Geen';
     }
-    return 'Geen';
-  }
 
-  getProductLines()
-  {
-    this.apiService.get('productlines').then((productlines) => {
-        this.productLines = productlines;
-    });
-  }
+    getProductLines()
+    {
+        this.apiService.get('productlines').then((productlines) => {
+            this.productLines = productlines;
+        });
+    }
 
-  getProductSettings()
-  {
-    this.apiService.get('productsettings').then((productsettings) => {
-        this.productSettings = productsettings;
-        this.referenceProductSettings = productsettings;
-    });
-  }
+    getProductSettings()
+    {
+        this.apiService.get('productsettings').then((productsettings) => {
+            this.productSettings = productsettings;
+            this.referenceProductSettings = productsettings;
+        });
+    }
 
-  getSurgeries()
-  {
-    this.apiService.get('surgeries').then((surgeries) => {
-        this.surgeries = surgeries;
-    });
-  }
+    getSurgeries()
+    {
+        this.apiService.get('surgeries').then((surgeries) => {
+            this.surgeries = surgeries;
+        });
+    }
 
-  hideOverlay()
-  {
-    this.overlayOpen = false;
-    this.overlaySelected = false;
-    this.overlayCountry = false;
-    this.overlaySurgery = false;
-    this.overlaySettings = false;
-    this.overlayCombinedProducts = false;
-  }
+    hideOverlay()
+    {
+        this.overlayOpen = false;
+        this.overlaySelected = false;
+        this.overlayCountry = false;
+        this.overlaySurgery = false;
+        this.overlaySettings = false;
+        this.overlayCombinedProducts = false;
+    }
 
-  init()
-  {
-      this.getProducts();
-      this.getProductLines();
-      this.getCountries();
-      this.getPositions();
-      this.getSurgeries();
-      this.getProductSettings();
-  }
+    init()
+    {
+        this.getProducts();
+        this.getProductLines();
+        this.getCountries();
+        this.getPositions();
+        this.getSurgeries();
+        this.getProductSettings();
+    }
 
-  loadProduct(id)
-  {
-    this.loadingProduct = true;
-    this.apiService.get('product/' + id + '?include=countries,settings,combined_products,position_product_surgery').then( (product) => {
-        this.selectedProduct = product;
-        this.fillProductSettings(id);
-        this.fillCountries();
-        this.fillSurgeryPositions();
-        this.fillCombinedProducts();
-        this.loadingProduct = false;
-    });
-  }
+    loadProduct(id)
+    {
+        this.loadingProduct = true;
+        this.apiService.get('product/' + id + '?include=countries,settings,combined_products,position_product_surgery').then( (product) => {
+            this.selectedProduct = product;
+            this.fillProductSettings(id);
+            this.fillCountries();
+            this.fillSurgeryPositions();
+            this.fillCombinedProducts();
+            this.loadingProduct = false;
+        });
+    }
 
-  ngOnInit(): void {
-      this.init();
-      this.languageService.languageChanged.subscribe( value => {
-          if (value === true) {
+    ngOnInit(): void {
+        this.init();
+        this.languageService.languageChanged.subscribe( value => {
+          if (value === true && this.router.url === '/products') {
               this.init();
           }
-      });
-  }
+        });
+    }
 
-  positionInSurgery(surgery_id, position_id)
-  {
-      const surgery_position_index = _.findIndex(this.selectedPositionsPerSurgery,
+    positionInSurgery(surgery_id, position_id)
+    {
+        const surgery_position_index = _.findIndex(this.selectedPositionsPerSurgery,
           {
               'surgery_id': surgery_id,
               'position_id': position_id
           });
 
-      if (surgery_position_index !== -1){
-          return this.selectedPositionsPerSurgery[surgery_position_index].surface_area;
-      }
-  }
+        if (surgery_position_index !== -1){
+            return this.selectedPositionsPerSurgery[surgery_position_index].surface_area;
+        }
+    }
 
-  update(id)
-  {
-    this.apiService.update('product', this.selectedProduct , id).then(() => {
-      this.getProducts();
-      this.hideOverlay();
-      this.toastr.success('Product succesvol aangepast.', 'Gelukt!');
-    }).catch(() => {
-        this.toastr.warning('Aanpassen mislukt. Controleer of de velden correct gevuld zijn..', 'Oeps!');
-    });
-  }
+    update(id)
+    {
+        this.apiService.update('product', this.selectedProduct , id).then(() => {
+            this.getProducts();
+            this.hideOverlay();
+            this.toastr.success('Product succesvol aangepast.', 'Gelukt!');
+        }).catch(() => {
+            this.toastr.warning('Aanpassen mislukt. Controleer of de velden correct gevuld zijn..', 'Oeps!');
+        });
+    }
 
-  reset()
-  {
-    // Product
-    this.selectedProduct = {};
-    this.selectedCombinedProducts = [];
+    reset()
+    {
+        // Product
+        this.selectedProduct = {};
+        this.selectedCombinedProducts = [];
 
-    // Productsettings
-    this.selectedProductSettings = [];
-    this.productSettings = [];
+        // Productsettings
+        this.selectedProductSettings = [];
+        this.productSettings = [];
 
-    // Countries
-    this.selectedCountries = [];
-    this.unselectedCountries = [];
+        // Countries
+        this.selectedCountries = [];
+        this.unselectedCountries = [];
 
-    // Surgeries
-    this.selectedSurgeries = [];
-    this.selectedPositionsPerSurgery = [];
-  }
+        // Surgeries
+        this.selectedSurgeries = [];
+        this.selectedPositionsPerSurgery = [];
+    }
 
-  setSearchParam(event: any)
-  {
-      this.searchProducts = _.filter(this.referenceProducts, (product) => {
-        return product.name.toLowerCase().match(event.target.value.toLowerCase());
-      });
+    setSearchParam(event: any)
+    {
+        this.searchProducts = _.filter(this.referenceProducts, (product) => {
+            return product.name.toLowerCase().match(event.target.value.toLowerCase());
+        });
 
-      this.products = this.searchProducts;
-  }
+        this.products = this.searchProducts;
+    }
 
-  selectCountry(id)
-  {
-    _.pull(this.unselectedCountries, id);
-    this.selectedCountries.push(id);
-  }
+    selectCountry(id)
+    {
+        _.pull(this.unselectedCountries, id);
+        this.selectedCountries.push(id);
+    }
 
-  toggleCombinedProduct(product_id)
-  {
-      const index = this.selectedCombinedProducts.indexOf(product_id);
+    toggleCombinedProduct(product_id)
+    {
+        const index = this.selectedCombinedProducts.indexOf(product_id);
 
-      if (index !== -1)
-      {
-          this.selectedCombinedProducts.splice(index, 1);
-      }else{
-          this.selectedCombinedProducts.push(product_id);
-      }
-  }
+        if (index !== -1)
+        {
+            this.selectedCombinedProducts.splice(index, 1);
+        }else{
+            this.selectedCombinedProducts.push(product_id);
+        }
+    }
 
-  toggleSurgery(surgery_id)
-  {
-      if (this.surgeryInArray(surgery_id))
-      {
+    toggleSurgery(surgery_id)
+    {
+        if (this.surgeryInArray(surgery_id))
+        {
           const index = _.filter(this.selectedPositionsPerSurgery, {
               'surgery_id': surgery_id,
           });
@@ -502,121 +494,109 @@ export class ProductComponent implements OnInit {
 
               this.selectedPositionsPerSurgery.splice(surgery_position_index, 1);
           });
-
-      }else{
+        }else{
           const surgery = {'surgery_id': surgery_id};
           this.selectedPositionsPerSurgery.push(surgery);
-      }
-  }
+        }
+    }
 
-  toggleProductSetting(id)
-  {
-      const indexArray = this.selectedProductSettings.indexOf(id);
-      if (indexArray === -1){
-          this.toggledProductSettings.push(id);
-      }else{
-          this.toggledProductSettings.splice(indexArray, 1);
-      }
-  }
+    unselectCountry(id)
+    {
+        _.pull(this.selectedCountries, id);
+        this.unselectedCountries.push(id);
+    }
 
-  unselectCountry(id)
-  {
-    _.pull(this.selectedCountries, id);
-    this.unselectedCountries.push(id);
-  }
+    updateCombinedProducts(id)
+    {
+        this.createCombinedProduct(id);
+        this.reset();
+    }
 
-  updateCombinedProducts(id)
-  {
-      this.createCombinedProduct(id);
-      this.reset();
-  }
+    updateCountries(id)
+    {
+        this.selectedProduct.countries = this.selectedCountries;
+        this.createCountries(id);
+        this.reset();
+    }
 
-  updateCountries(id)
-  {
-    this.selectedProduct.countries = this.selectedCountries;
-    this.createCountries(id);
-    this.reset();
-  }
+    updateProduct(id)
+    {
+        this.selectedProduct.combine_with = this.selectedCombinedProducts;
+        this.update(id);
+    }
 
-  updateProduct(id)
-  {
-    this.selectedProduct.combine_with = this.selectedCombinedProducts;
-    this.update(id);
-  }
+    updateProductSettings(id)
+    {
+        this.selectedProduct.settings = this.selectedProductSettings;
+        this.createProductSettings(id);
+    }
 
-  updateProductSettings(id)
-  {
-    this.selectedProduct.settings = this.selectedProductSettings;
-    this.createProductSettings(id);
-  }
+    updateSurgeries(id)
+    {
+        this.createSurgeryPosition(id);
+    }
 
-  updateSurgeries(id)
-  {
-      this.createSurgeryPosition(id);
-  }
+    selectAllCountries()
+    {
+        _.filter(this.countries, (country) => {
+            return this.selectedCountries.indexOf(country.id) === -1;
+        }).forEach((country) => {
+            this.selectCountry(country.id);
+        });
+    }
 
-  selectAllCountries()
-  {
-      _.filter(this.countries, (country) => {
-        return this.selectedCountries.indexOf(country.id) === -1;
-      }).forEach((country) => {
-        this.selectCountry(country.id);
-      });
-  }
+    deselectAllCountries()
+    {
+        _.filter(this.countries, (country) => {
+            return this.selectedCountries.indexOf(country.id) !== -1;
+        }).forEach((country) => {
+            this.unselectCountry(country.id);
+        });
+    }
 
-  deselectAllCountries()
-  {
-      _.filter(this.countries, (country) => {
-          return this.selectedCountries.indexOf(country.id) !== -1;
-      }).forEach((country) => {
-          this.unselectCountry(country.id);
-      });
-  }
-
-  surgeryInArray(id)
-  {
-      const index = _.findIndex(this.selectedPositionsPerSurgery, {
+    surgeryInArray(id)
+    {
+        const index = _.findIndex(this.selectedPositionsPerSurgery, {
           'surgery_id': id,
-      });
+        });
 
-      if (index !== -1){
+        if (index !== -1){
           return true;
-      }
-      return false;
+        }
+        return false;
+    }
 
-  }
+    viewDetails(id)
+    {
+        this.reset();
+        this.getProduct(id);
+    }
 
-  viewDetails(id)
-  {
-    this.reset();
-    this.getProduct(id);
-  }
+    viewSurgery(id)
+    {
+        this.reset();
+        this.loadProduct(id);
+        this.overlaySurgery = true;
+    }
 
-  viewSurgery(id)
-  {
-    this.reset();
-    this.loadProduct(id);
-    this.overlaySurgery = true;
-  }
+    viewCountries(id)
+    {
+        this.reset();
+        this.loadProduct(id);
+        this.overlayCountry = true;
+    }
 
-  viewCountries(id)
-  {
-    this.reset();
-    this.loadProduct(id);
-    this.overlayCountry = true;
-  }
+    viewProductSettings(id)
+    {
+        this.reset();
+        this.loadProduct(id);
+        this.overlaySettings = true;
+    }
 
-  viewProductSettings(id)
-  {
-    this.reset();
-    this.loadProduct(id);
-    this.overlaySettings = true;
-  }
-
-  viewCombinedProducts(id)
-  {
-      this.reset();
-      this.loadProduct(id);
-      this.overlayCombinedProducts = true;
-  }
+    viewCombinedProducts(id)
+    {
+        this.reset();
+        this.loadProduct(id);
+        this.overlayCombinedProducts = true;
+    }
 }

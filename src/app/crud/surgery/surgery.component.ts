@@ -1,4 +1,6 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
+import { Router, ActivatedRoute} from '@angular/router';
+
 
 import * as _ from 'lodash';
 
@@ -27,7 +29,11 @@ export class SurgeryComponent implements OnInit {
     selectedSurgery: any = {};
     overlaySelected = false;
 
-    constructor(private apiService: ApiService, public toastr: ToastsManager, private languageService: LanguageService, vcr: ViewContainerRef) {
+    constructor(private apiService: ApiService,
+                public toastr: ToastsManager,
+                private languageService: LanguageService,
+                vcr: ViewContainerRef,
+                private router: Router,) {
         this.toastr.setRootViewContainerRef(vcr);
     }
 
@@ -86,7 +92,7 @@ export class SurgeryComponent implements OnInit {
     {
         this.init();
         this.languageService.languageChanged.subscribe( value => {
-            if (value === true) {
+            if (value === true && this.router.url === '/surgeries') {
                 this.init();
             }
         });
