@@ -37,7 +37,7 @@
                 </div>
                 <div>
                     <hr>
-                    <span><i class="material-icons font-lg text-color-light">settings</i><h5 class="inline-block text-color-light">Beheer</h5></span>
+                    <span><i class="material-icons font-lg text-color-light">perm_data_settings</i><h5 class="inline-block text-color-light">Beheer</h5></span>
                     <a class="transition-normal" [routerLink]="['/users']">Gebruikers</a>
                     <a class="transition-normal" [routerLink]="['/roles']">Rollen</a>
                     <a class="transition-normal" [routerLink]="['/countries']">Landen</a>
@@ -46,6 +46,7 @@
             </li>
             <li>
                 <hr>
+                <span><i class="material-icons font-lg text-color-light">exit_to_app</i><h5 class="inline-block text-color-light">Uitloggen</h5></span>
                 <a (click)="logout()">Uitloggen</a>
             </li>
         </ul>

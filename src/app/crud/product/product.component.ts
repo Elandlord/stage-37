@@ -1,9 +1,7 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
-import { Router, ActivatedRoute} from '@angular/router';
+import { Router } from '@angular/router';
 
 import * as _ from 'lodash';
-
-import {DropdownModule} from 'ngx-dropdown';
 
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
