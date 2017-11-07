@@ -163,9 +163,9 @@ export class ProductComponent implements OnInit {
     create()
     {
         this.apiService.post('products', this.model).then(() => {
-          this.getProducts();
-          this.hideOverlay();
-          this.toastr.success('Product succesvol toegevoegd.', 'Gelukt!');
+            this.toastr.success('Product succesvol toegevoegd.', 'Gelukt!');
+            this.hideOverlay();
+            this.getProducts();
         }).catch(() => {
           this.toastr.warning('Toevoegen mislukt. Controleer of de velden correct gevuld zijn..', 'Oeps!');
         });
@@ -178,9 +178,9 @@ export class ProductComponent implements OnInit {
         };
 
         this.apiService.post('product/' + product_id + '/combined_products', combined_products).then(() => {
-          this.getProducts();
-          this.hideOverlay();
-          this.toastr.success('Producten succesvol gecombineerd', 'Gelukt!');
+            this.toastr.success('Producten succesvol gecombineerd', 'Gelukt!');
+            this.hideOverlay();
+            this.getProducts();
         }).catch(() => {
           this.toastr.warning('Aanpassen mislukt. Controleer of de velden correct gevuld zijn..', 'Oeps!');
         });
@@ -193,9 +193,9 @@ export class ProductComponent implements OnInit {
         };
 
         this.apiService.post('product/' + product_id + '/settings', productsettings).then(() => {
-          this.getProducts();
-          this.hideOverlay();
-          this.toastr.success('Productinstellingen succesvol aangepast', 'Gelukt!');
+            this.toastr.success('Productinstellingen succesvol aangepast', 'Gelukt!');
+            this.hideOverlay();
+            this.getProducts();
         }).catch(() => {
           this.toastr.warning('Aanpassen mislukt. Controleer of de velden correct gevuld zijn..', 'Oeps!');
         });
@@ -207,9 +207,9 @@ export class ProductComponent implements OnInit {
           'surgery_position': this.selectedPositionsPerSurgery
         };
         this.apiService.post('product/' + product_id + '/surgeryposition', surgery_position).then(() => {
-            this.getProducts();
-            this.hideOverlay();
             this.toastr.success('Operaties en posities succesvol aangepast', 'Gelukt!');
+            this.hideOverlay();
+            this.getProducts();
         }).catch(() => {
             this.toastr.warning('Aanpassen mislukt. Controleer of de velden correct gevuld zijn..', 'Oeps!');
         });
@@ -222,9 +222,9 @@ export class ProductComponent implements OnInit {
         };
 
         this.apiService.post('product/' + product_id + '/countries', saveCountries).then(() => {
-            this.getProducts();
-            this.hideOverlay();
             this.toastr.success('Landen succesvol aangepast', 'Gelukt!');
+            this.hideOverlay();
+            this.getProducts();
         }).catch(() => {
             this.toastr.warning('Aanpassen mislukt. Controleer of de velden correct gevuld zijn..', 'Oeps!');
         });
@@ -234,8 +234,8 @@ export class ProductComponent implements OnInit {
     destroy(id)
     {
         this.apiService.delete('product', id).then(() => {
-          this.getProducts();
-          this.toastr.info('Product succesvol verwijderd.', 'Gelukt!');
+            this.toastr.info('Product succesvol verwijderd.', 'Gelukt!');
+            this.getProducts();
         });
     }
 
@@ -295,12 +295,12 @@ export class ProductComponent implements OnInit {
 
     getCountryNameById(id)
     {
-        for (const country of this.countries)
-        {
-          if (country.id === id)
-          {
+        const country = _.find(this.countries, (country_iteratee) => {
+            return country_iteratee.id === id;
+        });
+
+        if(country.id !== null){
             return country.name;
-          }
         }
     }
 
@@ -333,15 +333,15 @@ export class ProductComponent implements OnInit {
     {
         if (this.productLines !== undefined)
         {
-            for (const productLine of this.productLines)
-            {
-                if (productLine.id === id)
-                {
-                    return productLine.name;
-                }
+            const productline = _.find(this.productLines, (productLine) => {
+                return productLine.id === id;
+            });
+
+            if(productline.id !== null){
+                return productline.name;
             }
+            return 'Geen';
         }
-        return 'Geen';
     }
 
     getProductLines()
@@ -424,9 +424,9 @@ export class ProductComponent implements OnInit {
     update(id)
     {
         this.apiService.update('product', this.selectedProduct , id).then(() => {
-            this.getProducts();
-            this.hideOverlay();
             this.toastr.success('Product succesvol aangepast.', 'Gelukt!');
+            this.hideOverlay();
+            this.getProducts();
         }).catch(() => {
             this.toastr.warning('Aanpassen mislukt. Controleer of de velden correct gevuld zijn..', 'Oeps!');
         });
