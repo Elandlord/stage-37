@@ -228,6 +228,14 @@ export class ProductComponent implements OnInit {
         });
     }
 
+    deselectAllCountries()
+    {
+        _.filter(this.countries, (country) => {
+            return this.selectedCountries.indexOf(country.id) !== -1;
+        }).forEach((country) => {
+            this.unselectCountry(country.id);
+        });
+    }
 
     destroy(id)
     {
@@ -419,17 +427,6 @@ export class ProductComponent implements OnInit {
         }
     }
 
-    update(id)
-    {
-        this.apiService.update('product', this.selectedProduct , id).then(() => {
-            this.toastr.success('Product succesvol aangepast.', 'Gelukt!');
-            this.hideOverlay();
-            this.getProducts();
-        }).catch(() => {
-            this.toastr.warning('Aanpassen mislukt. Controleer of de velden correct gevuld zijn..', 'Oeps!');
-        });
-    }
-
     reset()
     {
         // Product
@@ -449,6 +446,15 @@ export class ProductComponent implements OnInit {
         this.selectedPositionsPerSurgery = [];
     }
 
+    selectAllCountries()
+    {
+        _.filter(this.countries, (country) => {
+            return this.selectedCountries.indexOf(country.id) === -1;
+        }).forEach((country) => {
+            this.selectCountry(country.id);
+        });
+    }
+
     setSearchParam(event: any)
     {
         this.searchProducts = _.filter(this.referenceProducts, (product) => {
@@ -462,6 +468,18 @@ export class ProductComponent implements OnInit {
     {
         _.pull(this.unselectedCountries, id);
         this.selectedCountries.push(id);
+    }
+
+    surgeryInArray(id)
+    {
+        const index = _.findIndex(this.selectedPositionsPerSurgery, {
+            'surgery_id': id,
+        });
+
+        if (index !== -1){
+            return true;
+        }
+        return false;
     }
 
     toggleCombinedProduct(product_id)
@@ -504,6 +522,18 @@ export class ProductComponent implements OnInit {
         this.unselectedCountries.push(id);
     }
 
+
+    update(id)
+    {
+        this.apiService.update('product', this.selectedProduct , id).then(() => {
+            this.toastr.success('Product succesvol aangepast.', 'Gelukt!');
+            this.hideOverlay();
+            this.getProducts();
+        }).catch(() => {
+            this.toastr.warning('Aanpassen mislukt. Controleer of de velden correct gevuld zijn..', 'Oeps!');
+        });
+    }
+
     updateCombinedProducts(id)
     {
         this.createCombinedProduct(id);
@@ -532,36 +562,6 @@ export class ProductComponent implements OnInit {
     updateSurgeries(id)
     {
         this.createSurgeryPosition(id);
-    }
-
-    selectAllCountries()
-    {
-        _.filter(this.countries, (country) => {
-            return this.selectedCountries.indexOf(country.id) === -1;
-        }).forEach((country) => {
-            this.selectCountry(country.id);
-        });
-    }
-
-    deselectAllCountries()
-    {
-        _.filter(this.countries, (country) => {
-            return this.selectedCountries.indexOf(country.id) !== -1;
-        }).forEach((country) => {
-            this.unselectCountry(country.id);
-        });
-    }
-
-    surgeryInArray(id)
-    {
-        const index = _.findIndex(this.selectedPositionsPerSurgery, {
-          'surgery_id': id,
-        });
-
-        if (index !== -1){
-          return true;
-        }
-        return false;
     }
 
     viewDetails(id)
